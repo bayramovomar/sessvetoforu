@@ -150,7 +150,7 @@
 
                 <div id="statusMessageContainer" class="w-full mt-4 p-4 rounded-xl text-center transition-colors duration-300 bg-green-100 text-green-800 border border-green-200">
                     <h3 id="statusTitle" class="text-lg font-bold">🟢 Yaşıl Zona</h3>
-                    <p id="statusDesc" class="font-medium mt-1">"Hər şey əladır, belə davam edin."</p>
+                    <p id="statusDesc" class="font-medium mt-1">"Hər şey əladər, belə davam edin."</p>
                 </div>
 
                 <div id="buzzerAlert" class="hidden absolute top-4 right-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center shadow-lg animate-pulse">
@@ -337,6 +337,38 @@
             }
         });
 
+        // Audio logic for the buzzer
+        let audioCtx = null;
+        let oscillator = null;
+
+        function playBuzzer() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (oscillator) return; // Already playing
+
+            oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            oscillator.type = 'square';
+            oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // Frequency in Hz
+            
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); // Lower volume
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.start();
+        }
+
+        function stopBuzzer() {
+            if (oscillator) {
+                oscillator.stop();
+                oscillator.disconnect();
+                oscillator = null;
+            }
+        }
+
         function updateUI(value) {
             valueText.innerText = value;
             let activeColor = colors.green;
@@ -349,17 +381,26 @@
                 statusContainer.classList.add('bg-green-100', 'text-green-800', 'border-green-200');
                 statusTitle.innerText = "🟢 Yaşıl Zona (Sakitlik)";
                 statusDesc.innerText = '"Hər şey əladər, belə davam edin."';
+                stopBuzzer();
             } else if (value >= 20 && value <= 60) {
                 activeColor = colors.yellow;
                 statusContainer.classList.add('bg-yellow-100', 'text-yellow-800', 'border-yellow-200');
                 statusTitle.innerText = "🟡 Sarı Zona (Xəbərdarlıq)";
                 statusDesc.innerText = '"Səsiniz artır, diqqətli olun."';
+                stopBuzzer();
             } else {
                 activeColor = colors.red;
                 statusContainer.classList.add('bg-red-100', 'text-red-900', 'border-red-300', 'blinking-bg');
                 statusTitle.innerText = "🔴 Qırmızı Zona (Həyəcan)";
                 statusDesc.innerText = '"Limit aşıldı! Sakitliyi bərpa edin!"';
                 buzzerAlert.classList.remove('hidden');
+                
+                // Play sound if value is between 70-100 as requested
+                if (value >= 70) {
+                    playBuzzer();
+                } else {
+                    stopBuzzer();
+                }
             }
 
             gaugeChart.data.datasets[0].data = [value, 100 - value];
@@ -370,6 +411,13 @@
         slider.addEventListener('input', function(e) {
             updateUI(parseInt(e.target.value));
         });
+
+        // Initialize audio on first click to comply with browser policies
+        document.addEventListener('mousedown', () => {
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }, { once: true });
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
