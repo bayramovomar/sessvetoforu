@@ -83,6 +83,15 @@
             border-radius: 50%;
             border: 4px solid #fff;
         }
+
+        .mic-active {
+            animation: pulse-red 1.5s infinite;
+        }
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -155,9 +164,15 @@
         <!-- 2. Simulyator (Mərkəzi Bölmə) -->
         <section id="simulyator" class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
             <div class="bg-white rounded-3xl shadow-xl p-8 border border-slate-200 flex flex-col items-center relative overflow-hidden">
-                <div class="w-full mb-8">
-                    <h2 class="text-3xl font-black text-slate-800 mb-2">Canlı Simulyator</h2>
-                    <p class="text-slate-500 font-medium">Cihazın məntiqini burada test edin.</p>
+                <div class="w-full mb-8 flex justify-between items-start">
+                    <div>
+                        <h2 class="text-3xl font-black text-slate-800 mb-2">Canlı Simulyator</h2>
+                        <p class="text-slate-500 font-medium">Cihazın məntiqini burada test edin.</p>
+                    </div>
+                    <button id="micBtn" class="bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-600 p-4 rounded-2xl transition-all shadow-sm flex flex-col items-center group">
+                        <span class="text-2xl mb-1 group-hover:scale-110 transition-transform">🎤</span>
+                        <span class="text-[10px] font-bold uppercase tracking-tighter">Mikrofon</span>
+                    </button>
                 </div>
 
                 <div class="w-full max-w-sm mb-10">
@@ -348,6 +363,7 @@ if (səs > 600) {
         const statusTitle = document.getElementById('statusTitle');
         const statusDesc = document.getElementById('statusDesc');
         const buzzerAlert = document.getElementById('buzzerAlert');
+        const micBtn = document.getElementById('micBtn');
         
         const colors = {
             green: '#22c55e',
@@ -384,6 +400,9 @@ if (səs > 600) {
 
         let audioCtx = null;
         let oscillator = null;
+        let microphoneStream = null;
+        let analyzer = null;
+        let isMicEnabled = false;
 
         function playBuzzer() {
             if (!audioCtx) {
@@ -411,6 +430,69 @@ if (səs > 600) {
                 oscillator.disconnect();
                 oscillator = null;
             }
+        }
+
+        async function toggleMicrophone() {
+            if (isMicEnabled) {
+                stopMicrophone();
+                return;
+            }
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                isMicEnabled = true;
+                microphoneStream = stream;
+                
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                
+                const source = audioCtx.createMediaStreamSource(stream);
+                analyzer = audioCtx.createAnalyser();
+                analyzer.fftSize = 256;
+                source.connect(analyzer);
+                
+                micBtn.classList.add('mic-active', 'bg-red-500', 'text-white');
+                micBtn.classList.remove('bg-slate-100', 'text-slate-600');
+                
+                processAudio();
+            } catch (err) {
+                console.error("Mikrofon girişi rədd edildi:", err);
+                alert("Mikrofonu aktivləşdirmək üçün icazə verməlisiniz.");
+            }
+        }
+
+        function stopMicrophone() {
+            isMicEnabled = false;
+            if (microphoneStream) {
+                microphoneStream.getTracks().forEach(track => track.stop());
+            }
+            micBtn.classList.remove('mic-active', 'bg-red-500', 'text-white');
+            micBtn.classList.add('bg-slate-100', 'text-slate-600');
+            stopBuzzer();
+        }
+
+        function processAudio() {
+            if (!isMicEnabled) return;
+            
+            const bufferLength = analyzer.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            analyzer.getByteFrequencyData(dataArray);
+            
+            let sum = 0;
+            for (let i = 0; i < bufferLength; i++) {
+                sum += dataArray[i];
+            }
+            let average = sum / bufferLength;
+            
+            // Səs səviyyəsini 0-100 aralığına uyğunlaşdırırıq
+            // Həssaslığı artırmaq üçün çarpan istifadə edirik
+            let volume = Math.min(100, Math.round(average * 1.5));
+            
+            slider.value = volume;
+            updateUI(volume);
+            
+            requestAnimationFrame(processAudio);
         }
 
         function updateUI(value) {
@@ -452,8 +534,11 @@ if (səs > 600) {
         }
 
         slider.addEventListener('input', function(e) {
+            // Əgər mikrofon aktivdirsə, əllə idarəni müvəqqəti dayandırmaq olar və ya hər ikisi işləyər
             updateUI(parseInt(e.target.value));
         });
+
+        micBtn.addEventListener('click', toggleMicrophone);
 
         document.addEventListener('mousedown', () => {
             if (audioCtx && audioCtx.state === 'suspended') {
