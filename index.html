@@ -34,10 +34,7 @@
         .chart-container {
             position: relative;
             width: 100%;
-            max-width: 400px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 250px;
+            height: 200px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -132,7 +129,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="feature-card p-6 rounded-2xl bg-slate-50">
                             <h4 class="font-bold text-blue-600 mb-2">🎯 Problem</h4>
-                            <p class="text-sm text-slate-500">Dərs zamanı diqqətin yayınması, yüksək desibel səviyyəsinin yaratdığı stress və müəllim yorğunluğu.</p>
+                            <p class="text-sm text-slate-500">Gündəlik həyatımızdakı yüksək səslər, məsələn: silah səsləri, bomba səsləri və s. kimi travmatik küy faktorları cəmiyyətdə və təhsil mühitində ciddi stress yaradır.</p>
                         </div>
                         <div class="feature-card p-6 rounded-2xl bg-slate-50">
                             <h4 class="font-bold text-emerald-600 mb-2">🚀 Həll</h4>
@@ -161,13 +158,13 @@
             </div>
         </section>
 
-        <!-- 2. Simulyator (Mərkəzi Bölmə) -->
+        <!-- 2. Simulyator (Yenilənmiş İkili Skala) -->
         <section id="simulyator" class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
             <div class="bg-white rounded-3xl shadow-xl p-8 border border-slate-200 flex flex-col items-center relative overflow-hidden">
                 <div class="w-full mb-8 flex justify-between items-start">
                     <div>
-                        <h2 class="text-3xl font-black text-slate-800 mb-2">Canlı Simulyator</h2>
-                        <p class="text-slate-500 font-medium">Cihazın məntiqini burada test edin.</p>
+                        <h2 class="text-3xl font-black text-slate-800 mb-2">İkili Ölçmə Paneli</h2>
+                        <p class="text-slate-500 font-medium">Səs vahidi və desibel şkalasını izləyin.</p>
                     </div>
                     <button id="micBtn" class="bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-600 p-4 rounded-2xl transition-all shadow-sm flex flex-col items-center group">
                         <span class="text-2xl mb-1 group-hover:scale-110 transition-transform">🎤</span>
@@ -176,19 +173,38 @@
                 </div>
 
                 <div class="w-full max-w-sm mb-10">
-                    <div class="flex justify-between text-xs font-bold text-slate-400 mb-3 uppercase tracking-widest">
-                        <span>0 Sakit</span>
-                        <span>İdarəetmə Paneli</span>
-                        <span>100 Küy</span>
+                    <div class="flex justify-between text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-widest">
+                        <span>Min</span>
+                        <span>Səs Simulyatoru (Ümumi İdarəetmə)</span>
+                        <span>Max</span>
                     </div>
                     <input type="range" id="soundSlider" min="0" max="100" value="10" class="w-full h-4 bg-slate-100 rounded-full appearance-none cursor-pointer accent-blue-600 border border-slate-200">
                 </div>
 
-                <div class="chart-container mb-6">
-                    <canvas id="gaugeChart"></canvas>
-                    <div class="absolute inset-0 flex flex-col items-center justify-end pb-8 pointer-events-none">
-                        <span id="soundValueText" class="text-5xl font-black text-slate-800">10</span>
-                        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Səs Vahidi</span>
+                <!-- İki Skala Yan-yana -->
+                <div class="grid grid-cols-2 gap-4 w-full mb-8">
+                    <!-- Skala 1: Səs Vahidi -->
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col items-center">
+                        <div class="chart-container">
+                            <canvas id="unitGauge"></canvas>
+                            <div class="absolute inset-0 flex flex-col items-center justify-end pb-6 pointer-events-none">
+                                <span id="unitValueText" class="text-4xl font-black text-slate-800 tracking-tighter">10</span>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Unit (0-100)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Skala 2: Desibel -->
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col items-center">
+                        <div class="chart-container">
+                            <canvas id="dbGauge"></canvas>
+                            <div class="absolute inset-0 flex flex-col items-center justify-end pb-6 pointer-events-none">
+                                <div class="flex items-baseline">
+                                    <span id="dbValueText" class="text-4xl font-black text-slate-800 tracking-tighter">40</span>
+                                    <span class="text-sm font-bold text-slate-400 ml-0.5">dB</span>
+                                </div>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Level (30-120)</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -205,7 +221,7 @@
             <div class="space-y-6">
                 <div class="bg-white rounded-3xl shadow-sm p-8 border border-slate-200">
                     <h2 class="text-2xl font-black text-slate-800 mb-4">İdarəetmə Alqoritmi</h2>
-                    <p class="text-slate-600 mb-8 leading-relaxed">Cihaz hər 100 millisaniyədən bir ətraf mühitdən gələn səs dalğalarını rəqəmsal verilənlərə çevirir.</p>
+                    <p class="text-slate-600 mb-8 leading-relaxed">Cihaz hər 100 millisaniyədən bir ətraf mühitdən gələn səs dalğalarını rəqəmsal verilənlərə çevirir və desibel şkalasına uyğunlaşdırır.</p>
                     
                     <div class="flex p-1 bg-slate-100 rounded-2xl mb-8">
                         <button class="tab-btn active flex-1 py-3 text-sm font-bold rounded-xl transition-all" onclick="switchTab('zonalar')">Məntiqi Zonalar</button>
@@ -216,36 +232,37 @@
                         <div class="group flex items-center p-4 rounded-2xl border border-transparent hover:border-green-200 hover:bg-green-50 transition-all cursor-pointer">
                             <div class="w-12 h-12 bg-green-500 rounded-full mr-4 flex items-center justify-center text-white font-bold shadow-lg shadow-green-200 text-xl">1</div>
                             <div>
-                                <h4 class="font-bold text-slate-800">Normal İş Rejimi</h4>
-                                <p class="text-xs text-slate-500">Səs < 20: Sakit dialoq və fərdi iş.</p>
+                                <h4 class="font-bold text-slate-800">Sakit Rejim (0-30 Unit)</h4>
+                                <p class="text-xs text-slate-500">Kitabxana və ya fərdi iş üçün uyğun səviyyə.</p>
                             </div>
                         </div>
                         <div class="group flex items-center p-4 rounded-2xl border border-transparent hover:border-yellow-200 hover:bg-yellow-50 transition-all cursor-pointer">
                             <div class="w-12 h-12 bg-yellow-500 rounded-full mr-4 flex items-center justify-center text-white font-bold shadow-lg shadow-yellow-200 text-xl">2</div>
                             <div>
-                                <h4 class="font-bold text-slate-800">Müzakirə Rejimi</h4>
-                                <p class="text-xs text-slate-500">20-60: Qrup işləri və aktiv dərs.</p>
+                                <h4 class="font-bold text-slate-800">Aktiv Dərs (30-70 Unit)</h4>
+                                <p class="text-xs text-slate-500">Müzakirə və qrup işləri zamanı normal səviyyə.</p>
                             </div>
                         </div>
                         <div class="group flex items-center p-4 rounded-2xl border border-transparent hover:border-red-200 hover:bg-red-50 transition-all cursor-pointer">
                             <div class="w-12 h-12 bg-red-500 rounded-full mr-4 flex items-center justify-center text-white font-bold shadow-lg shadow-red-200 text-xl">3</div>
                             <div>
-                                <h4 class="font-bold text-slate-800">Kritik Limit</h4>
-                                <p class="text-xs text-slate-500">Səs > 60: Buzzer və qırmızı LED aktivləşir.</p>
+                                <h4 class="font-bold text-slate-800">Yüksək Küy (>70 Unit)</h4>
+                                <p class="text-xs text-slate-500">Təhlükəli səviyyə. Eşitmə sağlamlığına mənfi təsir edir.</p>
                             </div>
                         </div>
                     </div>
 
                     <div id="tab-kod" class="hidden">
                         <div class="bg-slate-900 rounded-2xl p-6 font-mono text-xs text-blue-300 overflow-x-auto shadow-2xl">
-<pre><code><span class="text-slate-500">// Sensor oxunuşu</span>
-int səs = analogRead(A0);
+<pre><code><span class="text-slate-500">// Sensor oxunuşu və dB çevrilməsi</span>
+int analogVal = analogRead(A0);
+float dB = 20 * log10(analogVal) + calibration;
 
 <span class="text-slate-500">// Məntiq</span>
-if (səs > 600) {
+if (dB > 80) {
   digitalWrite(LED_RED, HIGH);
   tone(BUZZER, 1000); 
-} else if (səs > 200) {
+} else if (dB > 50) {
   digitalWrite(LED_YELLOW, HIGH);
   noTone(BUZZER);
 } else {
@@ -321,8 +338,8 @@ if (səs > 600) {
             <h2 class="text-3xl font-black text-slate-800 mb-8 text-center">Tez-tez Verilən Suallar</h2>
             
             <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-                <h4 class="font-black text-slate-800 mb-2">Sensorun həssaslığını necə tənzimləmək olar?</h4>
-                <p class="text-slate-500 text-sm">Sensorun üzərindəki potensialometr vasitəsilə və ya kod bölməsindəki eşik (threshold) rəqəmlərini dəyişməklə istənilən mühitə uyğunlaşdırmaq mümkündür.</p>
+                <h4 class="font-black text-slate-800 mb-2">Desibel ölçümü nə dərəcədə dəqiqdir?</h4>
+                <p class="text-slate-500 text-sm">Simulyatorda istifadə edilən alqoritm səs təzyiqini logaritmik şkala ilə real desibel (dB) vahidinə yaxınlaşdırır. Arduino-da isə sensorun kalibrasiyası ilə dəqiqlik artırıla bilər.</p>
             </div>
             
             <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
@@ -332,7 +349,7 @@ if (səs > 600) {
             
             <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
                 <h4 class="font-black text-slate-800 mb-2">Buzzer həmişə çalır?</h4>
-                <p class="text-slate-500 text-sm">Xeyr, buzzer yalnız səs səviyyəsi 70-dən yuxarı qalxdıqda və sinifdə kəskin küy olduqda xəbərdarlıq məqsədilə işə düşür.</p>
+                <p class="text-slate-500 text-sm">Xeyr, buzzer yalnız səs səviyyəsi 85 dB-dən yuxarı qalxdıqda və sinifdə kəsharp küy olduqda xəbərdarlıq məqsədilə işə düşür.</p>
             </div>
         </section>
 
@@ -358,7 +375,8 @@ if (səs > 600) {
 
     <script>
         const slider = document.getElementById('soundSlider');
-        const valueText = document.getElementById('soundValueText');
+        const unitText = document.getElementById('unitValueText');
+        const dbText = document.getElementById('dbValueText');
         const statusContainer = document.getElementById('statusMessageContainer');
         const statusTitle = document.getElementById('statusTitle');
         const statusDesc = document.getElementById('statusDesc');
@@ -372,31 +390,32 @@ if (səs > 600) {
             bgTrack: '#f1f5f9'
         };
 
-        const ctx = document.getElementById('gaugeChart').getContext('2d');
-        const gaugeChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Səviyyə', 'Qalan'],
-                datasets: [{
-                    data: [10, 90],
-                    backgroundColor: [colors.green, colors.bgTrack],
-                    borderWidth: 0,
-                    circumference: 180,
-                    rotation: 270,
-                    cutout: '80%',
-                    borderRadius: 10
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { enabled: false }
+        const createGauge = (id) => {
+            const ctx = document.getElementById(id).getContext('2d');
+            return new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [10, 90],
+                        backgroundColor: [colors.green, colors.bgTrack],
+                        borderWidth: 0,
+                        circumference: 180,
+                        rotation: 270,
+                        cutout: '80%',
+                        borderRadius: 10
+                    }]
                 },
-                animation: { duration: 400, easing: 'easeOutBack' }
-            }
-        });
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                    animation: { duration: 400, easing: 'easeOutBack' }
+                }
+            });
+        };
+
+        const unitGauge = createGauge('unitGauge');
+        const dbGauge = createGauge('dbGauge');
 
         let audioCtx = null;
         let oscillator = null;
@@ -405,22 +424,15 @@ if (səs > 600) {
         let isMicEnabled = false;
 
         function playBuzzer() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if (oscillator) return; 
-
             oscillator = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
-
             oscillator.type = 'square';
             oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); 
-            
             gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); 
-
             oscillator.connect(gainNode);
             gainNode.connect(audioCtx.destination);
-            
             oscillator.start();
         }
 
@@ -433,126 +445,91 @@ if (səs > 600) {
         }
 
         async function toggleMicrophone() {
-            if (isMicEnabled) {
-                stopMicrophone();
-                return;
-            }
-
+            if (isMicEnabled) { stopMicrophone(); return; }
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 isMicEnabled = true;
                 microphoneStream = stream;
-                
-                if (!audioCtx) {
-                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 const source = audioCtx.createMediaStreamSource(stream);
                 analyzer = audioCtx.createAnalyser();
-                analyzer.fftSize = 256;
+                analyzer.fftSize = 512;
                 source.connect(analyzer);
-                
                 micBtn.classList.add('mic-active', 'bg-red-500', 'text-white');
-                micBtn.classList.remove('bg-slate-100', 'text-slate-600');
-                
                 processAudio();
-            } catch (err) {
-                console.error("Mikrofon girişi rədd edildi:", err);
-                alert("Mikrofonu aktivləşdirmək üçün icazə verməlisiniz.");
-            }
+            } catch (err) { console.error("Mikrofon rədd edildi:", err); }
         }
 
         function stopMicrophone() {
             isMicEnabled = false;
-            if (microphoneStream) {
-                microphoneStream.getTracks().forEach(track => track.stop());
-            }
+            if (microphoneStream) microphoneStream.getTracks().forEach(track => track.stop());
             micBtn.classList.remove('mic-active', 'bg-red-500', 'text-white');
-            micBtn.classList.add('bg-slate-100', 'text-slate-600');
             stopBuzzer();
         }
 
         function processAudio() {
             if (!isMicEnabled) return;
-            
-            const bufferLength = analyzer.frequencyBinCount;
-            const dataArray = new Uint8Array(bufferLength);
+            const dataArray = new Uint8Array(analyzer.frequencyBinCount);
             analyzer.getByteFrequencyData(dataArray);
-            
-            let sum = 0;
-            for (let i = 0; i < bufferLength; i++) {
-                sum += dataArray[i];
-            }
-            let average = sum / bufferLength;
-            
-            // Səs səviyyəsini 0-100 aralığına uyğunlaşdırırıq
-            // Həssaslığı artırmaq üçün çarpan istifadə edirik
-            let volume = Math.min(100, Math.round(average * 1.5));
-            
-            slider.value = volume;
-            updateUI(volume);
-            
+            let avg = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+            let val = Math.min(100, Math.round(avg * 1.5));
+            slider.value = val;
+            updateUI(val);
             requestAnimationFrame(processAudio);
         }
 
-        function updateUI(value) {
-            valueText.innerText = value;
+        function updateUI(unitVal) {
+            // Unit 0-100 aralığıdır. Desibel isə 30-120 aralığı kimi hesablanır.
+            const dbVal = Math.round(30 + (unitVal / 100 * 90));
+            
+            unitText.innerText = unitVal;
+            dbText.innerText = dbVal;
+            
             let activeColor = colors.green;
-
             statusContainer.classList.remove('bg-green-100', 'text-green-800', 'border-green-200', 'bg-yellow-100', 'text-yellow-800', 'border-yellow-200', 'bg-red-100', 'text-red-900', 'border-red-300', 'blinking-bg');
             buzzerAlert.classList.add('hidden');
 
-            if (value < 20) {
+            if (unitVal < 30) {
                 activeColor = colors.green;
                 statusContainer.classList.add('bg-green-100', 'text-green-800', 'border-green-200');
-                statusTitle.innerText = "🟢 Yaşıl Zona (Sakitlik)";
-                statusDesc.innerText = '"Sinifdə ideal iş mühiti hökm sürür."';
+                statusTitle.innerText = "🟢 Sakit Rejim";
+                statusDesc.innerText = '"İdeal iş mühiti."';
                 stopBuzzer();
-            } else if (value >= 20 && value <= 60) {
+            } else if (unitVal >= 30 && unitVal <= 70) {
                 activeColor = colors.yellow;
                 statusContainer.classList.add('bg-yellow-100', 'text-yellow-800', 'border-yellow-200');
-                statusTitle.innerText = "🟡 Sarı Zona (Xəbərdarlıq)";
-                statusDesc.innerText = '"Müzakirələr artır, səsə nəzarət edin."';
+                statusTitle.innerText = "🟡 Normal Rejim";
+                statusDesc.innerText = '"Aktiv müzakirə davam edir."';
                 stopBuzzer();
             } else {
                 activeColor = colors.red;
                 statusContainer.classList.add('bg-red-100', 'text-red-900', 'border-red-300', 'blinking-bg');
-                statusTitle.innerText = "🔴 Qırmızı Zona (Həyəcan)";
-                statusDesc.innerText = '"Kritik hədd! Sakitliyə ehtiyay var!"';
+                statusTitle.innerText = "🔴 Kritik Səviyyə";
+                statusDesc.innerText = '"Küy limiti aşıldı! Diqqət!"';
                 buzzerAlert.classList.remove('hidden');
-                
-                if (value >= 70) {
-                    playBuzzer();
-                } else {
-                    stopBuzzer();
-                }
+                if (unitVal >= 85) playBuzzer(); else stopBuzzer();
             }
 
-            gaugeChart.data.datasets[0].data = [value, 100 - value];
-            gaugeChart.data.datasets[0].backgroundColor = [activeColor, colors.bgTrack];
-            gaugeChart.update();
+            // Unit Skalası Yeniləmə
+            unitGauge.data.datasets[0].data = [unitVal, 100 - unitVal];
+            unitGauge.data.datasets[0].backgroundColor = [activeColor, colors.bgTrack];
+            unitGauge.update();
+
+            // DB Skalası Yeniləmə (30-120 arasını 0-100 kimi göstəririk)
+            let dbNorm = ((dbVal - 30) / 90) * 100;
+            dbGauge.data.datasets[0].data = [dbNorm, 100 - dbNorm];
+            dbGauge.data.datasets[0].backgroundColor = [activeColor, colors.bgTrack];
+            dbGauge.update();
         }
 
-        slider.addEventListener('input', function(e) {
-            // Əgər mikrofon aktivdirsə, əllə idarəni müvəqqəti dayandırmaq olar və ya hər ikisi işləyər
-            updateUI(parseInt(e.target.value));
-        });
-
+        slider.addEventListener('input', (e) => updateUI(parseInt(e.target.value)));
         micBtn.addEventListener('click', toggleMicrophone);
-
-        document.addEventListener('mousedown', () => {
-            if (audioCtx && audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-        }, { once: true });
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelector(`.tab-btn[onclick="switchTab('${tabId}')"]`).classList.add('active');
-            
             document.getElementById('tab-zonalar').classList.add('hidden');
             document.getElementById('tab-kod').classList.add('hidden');
-            
             document.getElementById(`tab-${tabId}`).classList.remove('hidden');
         }
 
