@@ -179,7 +179,10 @@
                     
                     <!-- Pop-up Bildiriş Overlay -->
                     <div id="notifOverlay">
-                        <div class="bg-slate-900 text-white p-10 rounded-[3rem] shadow-2xl border-4 border-blue-600 text-center animate__animated animate__zoomIn max-w-sm">
+                        <div class="bg-slate-900 text-white p-10 rounded-[3rem] shadow-2xl border-4 border-blue-600 text-center animate__animated animate__zoomIn max-w-sm relative">
+                            <!-- Bağlama Düyməsi -->
+                            <button onclick="closeNotif()" class="absolute top-4 right-6 text-2xl font-bold text-white/50 hover:text-white transition-colors">✕</button>
+                            
                             <div class="text-6xl mb-6">⚠️</div>
                             <h3 class="text-2xl font-black mb-4 uppercase tracking-tighter italic">Təhlükəli Səs Həddi!</h3>
                             <p class="text-blue-400 font-bold mb-6 italic">Müəllimə və rəhbərliyə avtomatik bildiriş göndərildi.</p>
@@ -249,12 +252,36 @@
             </div>
         </section>
 
+        <!-- YENİ SLAYD: Komandamız -->
+        <section class="slide bg-slate-50">
+            <div class="max-w-5xl w-full text-center">
+                <h2 class="text-5xl font-black text-slate-800 mb-16">Layihə Komandası</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Bayramov Omer -->
+                    <div class="bg-white p-12 rounded-[2.5rem] shadow-xl border border-slate-100 transform hover:-translate-y-2 transition-all">
+                        <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center text-3xl mx-auto mb-6">👨‍💻</div>
+                        <h4 class="text-xl font-bold text-slate-800">Bayramov Ömər</h4>
+                    </div>
+                    <!-- Hesenzade Murad -->
+                    <div class="bg-white p-12 rounded-[2.5rem] shadow-xl border border-slate-100 transform hover:-translate-y-2 transition-all">
+                        <div class="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center text-3xl mx-auto mb-6">🎨</div>
+                        <h4 class="text-xl font-bold text-slate-800">Həsənzadə Murad</h4>
+                    </div>
+                    <!-- Agacanov Huseyn -->
+                    <div class="bg-white p-12 rounded-[2.5rem] shadow-xl border border-slate-100 transform hover:-translate-y-2 transition-all">
+                        <div class="w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center text-3xl mx-auto mb-6">📈</div>
+                        <h4 class="text-xl font-bold text-slate-800">Ağacanov Hüseyn</h4>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- SLAYD 4: STEAM və Texniki -->
         <section class="slide bg-slate-900 text-white">
             <div class="max-w-5xl w-full">
                 <div class="text-center mb-16">
                     <h2 class="text-4xl font-black mb-4">STEAM və Texniki Sadəlik</h2>
-                    <p class="text-slate-400">"Dahilik sadəlikdədir" prinsipi ilə 15-20 AZN büdcə.</p>
+                    <p class="text-slate-400"></p>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -312,13 +339,17 @@
         let isMoving = false;
 
         // Navigasiya nöqtələrini yarat
-        slides.forEach((_, i) => {
-            const dot = document.createElement('div');
-            dot.className = `dot ${i === 0 ? 'active' : ''}`;
-            if (i === 1 || i === 2 || i === 4) dot.classList.add('dark-dot');
-            dot.addEventListener('click', () => goToSlide(i));
-            dotsContainer.appendChild(dot);
-        });
+        function createDots() {
+            dotsContainer.innerHTML = '';
+            slides.forEach((_, i) => {
+                const dot = document.createElement('div');
+                dot.className = `dot ${i === currentSlide ? 'active' : ''}`;
+                // Qara nöqtələr üçün slayd indeksləri (açıq rəngli fonu olan slaydlar)
+                if ([1, 2, 3, 4, 5].includes(i)) dot.classList.add('dark-dot');
+                dot.addEventListener('click', () => goToSlide(i));
+                dotsContainer.appendChild(dot);
+            });
+        }
 
         function updateDots() {
             const dots = document.querySelectorAll('.dot');
@@ -335,6 +366,8 @@
             updateDots();
             setTimeout(() => isMoving = false, 800);
         }
+
+        createDots();
 
         // Mouse Wheel (Skroll) hadisəsi
         window.addEventListener('wheel', (e) => {
@@ -360,6 +393,7 @@
         const statusDesc = document.getElementById('statusDesc');
         const notifOverlay = document.getElementById('notifOverlay');
         const micBtn = document.getElementById('micBtn');
+        let userClosedNotif = false;
 
         const createGauge = (id, color) => {
             return new Chart(document.getElementById(id).getContext('2d'), {
@@ -389,12 +423,16 @@
 
         let audioCtx, oscillator;
 
+        function closeNotif() {
+            notifOverlay.style.display = 'none';
+            userClosedNotif = true;
+        }
+
         function updateSimulation(val) {
             const dbVal = Math.round(30 + (val * 0.9));
             unitDisplay.innerText = val;
             dbDisplay.innerText = dbVal;
 
-            // Rəng və Status Limitləri
             statusBox.className = "p-6 rounded-2xl text-center border-2 transition-all duration-500 shadow-sm";
             let color = '#22c55e';
 
@@ -404,6 +442,7 @@
                 statusDesc.innerText = '"Hər şey əladər, belə davam edin."';
                 color = '#22c55e';
                 notifOverlay.style.display = 'none';
+                userClosedNotif = false;
                 stopBuzzer();
             } else if (val >= 20 && val <= 60) {
                 statusBox.classList.add('bg-yellow-100', 'text-yellow-800', 'border-yellow-200');
@@ -411,6 +450,7 @@
                 statusDesc.innerText = '"Səsiniz artır, diqqətli olun."';
                 color = '#eab308';
                 notifOverlay.style.display = 'none';
+                userClosedNotif = false;
                 stopBuzzer();
             } else {
                 statusBox.classList.add('bg-red-100', 'text-red-800', 'border-red-200', 'blinking-bg');
@@ -419,10 +459,11 @@
                 color = '#ef4444';
                 playBuzzer();
                 
-                if (val >= 70) {
+                if (val >= 70 && !userClosedNotif) {
                     notifOverlay.style.display = 'flex';
-                } else {
+                } else if (val < 70) {
                     notifOverlay.style.display = 'none';
+                    userClosedNotif = false;
                 }
             }
 
@@ -457,7 +498,6 @@
 
         slider.addEventListener('input', (e) => updateSimulation(parseInt(e.target.value)));
 
-        // Mikrofon (Sadələşdirilmiş simulyasiya üçün)
         let isMic = false;
         micBtn.addEventListener('click', () => {
             isMic = !isMic;
@@ -474,6 +514,7 @@
             } else {
                 stopBuzzer();
                 notifOverlay.style.display = 'none';
+                userClosedNotif = false;
             }
         });
 
