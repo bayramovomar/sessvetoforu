@@ -105,6 +105,18 @@
             font-size: 0.75rem;
             z-index: 10;
         }
+
+        /* Yeni Pop-up Stili */
+        #notifOverlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 50;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
@@ -123,14 +135,7 @@
                 <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-100 via-white to-blue-200">
                     Səs Svetoforu
                 </h1>
-                <p class="text-2xl md:text-4xl text-blue-100/80 font-medium italic mb-12">"Sinfin Ağıllı Keşikçisi"</p>
-                <div class="flex justify-center gap-6">
-                    <div class="text-center">
-                        <p class="text-slate-400 text-xs uppercase tracking-widest mb-2">Hazırladı</p>
-                        <p class="font-bold text-xl">Ömər Bayramov</p>
-                        <p class="text-sm text-blue-400">8b sinfi, 7 nömrəli məktəb</p>
-                    </div>
-                </div>
+                <p class="text-2xl md:text-4xl text-blue-100/80 font-medium italic">"Sinfin Ağıllı Keşikçisi"</p>
             </div>
         </section>
 
@@ -171,11 +176,17 @@
         <section class="slide bg-white" id="simulatorSlide">
             <div class="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div class="bg-slate-50 rounded-[2.5rem] p-10 border border-slate-200 shadow-xl relative overflow-hidden">
-                    <!-- Bildiriş Paneli -->
-                    <div id="notifBox" class="hidden absolute top-4 left-4 right-4 bg-slate-900 text-white p-4 rounded-2xl shadow-2xl border border-blue-500 animate__animated animate__slideInDown">
-                        <div class="flex items-center gap-3 italic text-xs">
-                            <span class="animate-pulse">📲</span>
-                            <span>Müəllimə bildiriş: 7a sinfində səs 70+ aşıldı!</span>
+                    
+                    <!-- Pop-up Bildiriş Overlay -->
+                    <div id="notifOverlay">
+                        <div class="bg-slate-900 text-white p-10 rounded-[3rem] shadow-2xl border-4 border-blue-600 text-center animate__animated animate__zoomIn max-w-sm">
+                            <div class="text-6xl mb-6">⚠️</div>
+                            <h3 class="text-2xl font-black mb-4 uppercase tracking-tighter italic">Təhlükəli Səs Həddi!</h3>
+                            <p class="text-blue-400 font-bold mb-6 italic">Müəllimə və rəhbərliyə avtomatik bildiriş göndərildi.</p>
+                            <div class="flex items-center justify-center gap-3 bg-white/10 p-3 rounded-2xl italic text-xs">
+                                <span class="animate-pulse">📲</span>
+                                <span>7a sinfi: 70+ Unit aşıldı!</span>
+                            </div>
                         </div>
                     </div>
 
@@ -223,7 +234,7 @@
                         </div>
                         <div class="p-5 bg-yellow-50 rounded-2xl border-l-4 border-yellow-500">
                             <p class="font-bold text-yellow-700">Sarı (20 - 60 Unit)</p>
-                            <p class="text-sm text-slate-500 italic">Xəbərdarlıq: Səs artır, diqqətli olun.</p>
+                            <p class="text-sm text-slate-500 italic">Xəbördarlıq: Səs artır, diqqətli olun.</p>
                         </div>
                         <div class="p-5 bg-red-50 rounded-2xl border-l-4 border-red-500">
                             <p class="font-bold text-red-700">Qırmızı (> 60 Unit)</p>
@@ -287,7 +298,6 @@
                 
                 <div class="bg-blue-600 text-white p-8 rounded-[2.5rem] shadow-2xl inline-block px-12">
                     <p class="text-2xl font-black">Diqqətiniz üçün təşəkkürlər!</p>
-                    <p class="text-sm opacity-80 mt-2 tracking-widest uppercase">Bayramov Ömər, 8b</p>
                 </div>
             </div>
         </section>
@@ -348,7 +358,7 @@
         const statusBox = document.getElementById('statusBox');
         const statusTitle = document.getElementById('statusTitle');
         const statusDesc = document.getElementById('statusDesc');
-        const notifBox = document.getElementById('notifBox');
+        const notifOverlay = document.getElementById('notifOverlay');
         const micBtn = document.getElementById('micBtn');
 
         const createGauge = (id, color) => {
@@ -391,16 +401,16 @@
             if (val < 20) {
                 statusBox.classList.add('bg-green-100', 'text-green-800', 'border-green-200');
                 statusTitle.innerText = "🟢 Yaşıl Zona";
-                statusDesc.innerText = '"Hər şey əladır, belə davam edin."';
+                statusDesc.innerText = '"Hər şey əladər, belə davam edin."';
                 color = '#22c55e';
-                notifBox.classList.add('hidden');
+                notifOverlay.style.display = 'none';
                 stopBuzzer();
             } else if (val >= 20 && val <= 60) {
                 statusBox.classList.add('bg-yellow-100', 'text-yellow-800', 'border-yellow-200');
                 statusTitle.innerText = "🟡 Sarı Zona";
                 statusDesc.innerText = '"Səsiniz artır, diqqətli olun."';
                 color = '#eab308';
-                notifBox.classList.add('hidden');
+                notifOverlay.style.display = 'none';
                 stopBuzzer();
             } else {
                 statusBox.classList.add('bg-red-100', 'text-red-800', 'border-red-200', 'blinking-bg');
@@ -409,8 +419,11 @@
                 color = '#ef4444';
                 playBuzzer();
                 
-                if (val >= 70) notifBox.classList.remove('hidden');
-                else notifBox.classList.add('hidden');
+                if (val >= 70) {
+                    notifOverlay.style.display = 'flex';
+                } else {
+                    notifOverlay.style.display = 'none';
+                }
             }
 
             unitChart.data.datasets[0].data = [val, 100 - val];
@@ -460,6 +473,7 @@
                 }, 500);
             } else {
                 stopBuzzer();
+                notifOverlay.style.display = 'none';
             }
         });
 
