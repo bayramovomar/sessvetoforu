@@ -3,82 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Səs Svetoforu - Sinfin Ağıllı Keşikçisi</title>
+    <title>Səs Svetoforu - Təqdimat</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     
     <style>
-        body {
-            background-color: #f8fafc;
-            color: #1e293b;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            scroll-behavior: smooth;
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden; /* Skroll barı gizlədirik, js ilə idarə edəcəyik */
+            font-family: 'Inter', sans-serif;
         }
-        
+
+        .slide-container {
+            height: 100vh;
+            width: 100%;
+            transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+        }
+
+        .slide {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            box-sizing: border-box;
+            position: relative;
+        }
+
         .header-gradient {
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
         }
 
-        .feature-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        /* Navigasiya nöqtələri */
+        .nav-dots {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 100;
         }
 
-        .feature-card:hover {
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            background: #3b82f6;
+            transform: scale(1.3);
+            border-color: white;
+        }
+
+        .dark-dot {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .dark-dot.active {
+            background: #1e293b;
             border-color: #3b82f6;
-            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.1);
-            transform: translateY(-2px);
         }
 
         .chart-container {
             position: relative;
             width: 100%;
-            height: 200px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .tab-btn.active {
-            border-bottom: 2px solid #3b82f6;
-            font-weight: 600;
-            color: #2563eb;
-        }
-        
-        .zone-card {
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .zone-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            height: 250px;
         }
 
         .blinking-bg {
             animation: blinker 1s linear infinite;
         }
         @keyframes blinker {
-            50% { background-color: rgba(239, 68, 68, 0.2); }
-        }
-
-        .floating-icon {
-            animation: float 3s ease-in-out infinite;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -9px;
-            top: 0;
-            width: 18px;
-            height: 18px;
-            background-color: #3b82f6;
-            border-radius: 50%;
-            border: 4px solid #fff;
+            50% { background-color: rgba(239, 68, 68, 0.15); }
         }
 
         .mic-active {
@@ -86,454 +92,377 @@
         }
         @keyframes pulse-red {
             0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
             100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .keyboard-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75rem;
+            z-index: 10;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body>
 
-    <!-- Header -->
-    <header class="header-gradient text-white py-16 px-4 shadow-2xl relative overflow-hidden">
-        <div class="absolute top-0 right-0 p-8 opacity-10 floating-icon">
-            <span class="text-9xl">🚦</span>
-        </div>
-        <div class="max-w-5xl mx-auto text-center relative z-10">
-            <div class="inline-block bg-blue-500/20 text-blue-300 px-4 py-1 rounded-full text-sm font-bold mb-4 tracking-widest uppercase">
-                İnnovativ Məktəb Layihəsi
-            </div>
-            <h1 class="text-5xl md:text-7xl font-black tracking-tighter mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 via-white to-blue-200">
-                Səs Svetoforu
-            </h1>
-            <p class="text-xl md:text-3xl text-blue-100/80 font-medium italic">Sinfin Ağıllı Keşikçisi</p>
-            <div class="mt-8">
-                <a href="#simulyator" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-bold transition-all shadow-lg inline-block">Simulyasiyaya Başla</a>
-            </div>
-        </div>
-    </header>
+    <div class="nav-dots" id="navDots"></div>
+    <div class="keyboard-hint">Navigasiya üçün skroll və ya ox düymələrindən istifadə edin</div>
 
-    <main class="flex-grow max-w-6xl mx-auto w-full px-4 py-12 space-y-24">
-
-        <!-- 1. Missiya Bölməsi -->
-        <section class="relative">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="md:col-span-2 bg-white rounded-3xl shadow-sm border border-slate-200 p-8 md:p-10 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-40 h-40 bg-blue-50 rounded-full -mr-20 -mt-20 opacity-40"></div>
-                    <h2 class="text-3xl font-black text-slate-800 mb-6 flex items-center">
-                        <span class="bg-blue-600 text-white w-12 h-12 flex items-center justify-center rounded-2xl mr-4 shadow-lg text-xl">💡</span>
-                        Layihənin Missiyası
-                    </h2>
-                    <p class="text-slate-600 text-xl leading-relaxed mb-8">
-                        Məktəb mühitində <strong>idarəolunmaz səs-küy</strong> təkcə öyrənməni çətinləşdirmir, həm də şagird və müəllimlədə psixoloji gərginlik yaradır. Bizim həllimiz, bu mücərrəd problemi vizual bir intizam alətinə çevirir.
-                    </p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="feature-card p-6 rounded-2xl bg-slate-50">
-                            <h4 class="font-bold text-blue-600 mb-2">🎯 Problem</h4>
-                            <p class="text-sm text-slate-500">Gündəlik həyatımızdakı yüksək səslər, məsələn: silah səsləri, bomba səsləri və s. kimi travmatik küy faktorları cəmiyyətdə və təhsil mühitində ciddi stress yaradır.</p>
-                        </div>
-                        <div class="feature-card p-6 rounded-2xl bg-slate-50">
-                            <h4 class="font-bold text-emerald-600 mb-2">🚀 Həll</h4>
-                            <p class="text-sm text-slate-500">Arduino əsaslı, səsi real vaxtda təhlil edən və rənglərlə xəbərdarlıq edən ağıllı sistem.</p>
-                        </div>
-                    </div>
+    <div class="slide-container" id="mainContainer">
+        
+        <!-- SLAYD 1: Giriş -->
+        <section class="slide header-gradient text-white">
+            <div class="max-w-4xl text-center animate__animated animate__fadeIn">
+                <div class="inline-block bg-blue-500/20 text-blue-300 px-4 py-1 rounded-full text-sm font-bold mb-6 tracking-widest uppercase border border-blue-500/30">
+                    İnnovativ Məktəb Layihəsi
                 </div>
-
-                <div class="bg-slate-800 rounded-3xl p-8 flex flex-col justify-center items-center text-center shadow-xl">
-                    <div class="mb-6">
-                        <span class="text-6xl">📊</span>
+                <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-100 via-white to-blue-200">
+                    Səs Svetoforu
+                </h1>
+                <p class="text-2xl md:text-4xl text-blue-100/80 font-medium italic mb-12">"Sinfin Ağıllı Keşikçisi"</p>
+                <div class="flex justify-center gap-6">
+                    <div class="text-center">
+                        <p class="text-slate-400 text-xs uppercase tracking-widest mb-2">Hazırladı</p>
+                        <p class="font-bold text-xl">Ömər Bayramov</p>
+                        <p class="text-sm text-blue-400">8b sinfi, 7 nömrəli məktəb</p>
                     </div>
-                    <h3 class="text-white text-xl font-bold mb-4">Gözlənilən Təsir</h3>
-                    <div class="space-y-4 w-full">
-                        <div class="bg-white/10 rounded-2xl p-4 border border-white/5 backdrop-blur-sm">
-                            <span class="text-blue-400 font-black text-3xl">65%</span>
-                            <p class="text-white/70 text-xs uppercase tracking-widest mt-1">Səs Səviyyəsində Azalma</p>
-                        </div>
-                        <div class="bg-white/10 rounded-2xl p-4 border border-white/5 backdrop-blur-sm">
-                            <span class="text-emerald-400 font-black text-3xl">100%</span>
-                            <p class="text-white/70 text-xs uppercase tracking-widest mt-1">Vizual İntizam</p>
-                        </div>
-                    </div>
-                    <p class="text-slate-400 text-sm mt-8 italic">"Səssizlik - uğurlu təhsilin təməlidir."</p>
                 </div>
             </div>
         </section>
 
-        <!-- 2. Simulyator (Yenilənmiş İkili Skala) -->
-        <section id="simulyator" class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-            <div class="bg-white rounded-3xl shadow-xl p-8 border border-slate-200 flex flex-col items-center relative overflow-hidden">
-                <div class="w-full mb-8 flex justify-between items-start">
-                    <div>
-                        <h2 class="text-3xl font-black text-slate-800 mb-2">İkili Ölçmə Paneli</h2>
-                        <p class="text-slate-500 font-medium">Səs vahidi və desibel şkalasını izləyin.</p>
+        <!-- SLAYD 2: Missiya və Problem -->
+        <section class="slide bg-slate-50">
+            <div class="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="animate__animated animate__fadeInLeft">
+                    <h2 class="text-4xl font-black text-slate-800 mb-8">Niyə Səssizlik?</h2>
+                    <div class="space-y-6">
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border-l-8 border-red-500">
+                            <h4 class="font-bold text-red-600 mb-2 uppercase text-xs tracking-widest">Problem</h4>
+                            <p class="text-slate-600 italic">"İdarəolunmaz səs-küy diqqəti dağıdır, öyrənməni dayandırır və müəllimin enerjisini tükədir."</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-3xl shadow-sm border-l-8 border-emerald-500">
+                            <h4 class="font-bold text-emerald-600 mb-2 uppercase text-xs tracking-widest">Həll</h4>
+                            <p class="text-slate-600">Səsi dinləyən, təhlil edən və vizual mesajlar verən ağıllı sistem.</p>
+                        </div>
                     </div>
-                    <button id="micBtn" class="bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-600 p-4 rounded-2xl transition-all shadow-sm flex flex-col items-center group">
-                        <span class="text-2xl mb-1 group-hover:scale-110 transition-transform">🎤</span>
-                        <span class="text-[10px] font-bold uppercase tracking-tighter">Mikrofon</span>
-                    </button>
                 </div>
-
-                <div class="w-full max-w-sm mb-10">
-                    <div class="flex justify-between text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-widest">
-                        <span>Min</span>
-                        <span>Səs Simulyatoru (Ümumi İdarəetmə)</span>
-                        <span>Max</span>
+                <div class="bg-slate-900 rounded-[3rem] p-12 text-center text-white shadow-2xl animate__animated animate__fadeInRight">
+                    <span class="text-7xl block mb-6">📉</span>
+                    <h3 class="text-2xl font-bold mb-6 tracking-tight">Gözlənilən Təsir</h3>
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="bg-white/5 border border-white/10 rounded-2xl p-6">
+                            <p class="text-4xl font-black text-blue-400">70%</p>
+                            <p class="text-xs uppercase tracking-widest text-slate-400 mt-1">Sakitlik Artımı</p>
+                        </div>
+                        <div class="bg-white/5 border border-white/10 rounded-2xl p-6">
+                            <p class="text-4xl font-black text-emerald-400">100%</p>
+                            <p class="text-xs uppercase tracking-widest text-slate-400 mt-1">Özünüidarəetmə</p>
+                        </div>
                     </div>
-                    <input type="range" id="soundSlider" min="0" max="100" value="10" class="w-full h-4 bg-slate-100 rounded-full appearance-none cursor-pointer accent-blue-600 border border-slate-200">
                 </div>
+            </div>
+        </section>
 
-                <!-- İki Skala Yan-yana -->
-                <div class="grid grid-cols-2 gap-4 w-full mb-8">
-                    <!-- Skala 1: Səs Vahidi -->
-                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col items-center">
-                        <div class="chart-container">
+        <!-- SLAYD 3: İnteraktiv Simulyator -->
+        <section class="slide bg-white" id="simulatorSlide">
+            <div class="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="bg-slate-50 rounded-[2.5rem] p-10 border border-slate-200 shadow-xl relative overflow-hidden">
+                    <!-- Bildiriş Paneli -->
+                    <div id="notifBox" class="hidden absolute top-4 left-4 right-4 bg-slate-900 text-white p-4 rounded-2xl shadow-2xl border border-blue-500 animate__animated animate__slideInDown">
+                        <div class="flex items-center gap-3 italic text-xs">
+                            <span class="animate-pulse">📲</span>
+                            <span>Müəllimə bildiriş: 7a sinfində səs 70+ aşıldı!</span>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center mb-8">
+                        <h2 class="text-3xl font-black text-slate-800">Səs Testi</h2>
+                        <button id="micBtn" class="bg-white hover:bg-blue-600 hover:text-white p-4 rounded-2xl shadow-sm transition-all flex items-center gap-2">
+                            <span class="text-xl">🎤</span>
+                            <span class="text-[10px] font-bold uppercase">Mikrofon</span>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <div class="chart-container flex flex-col items-center">
                             <canvas id="unitGauge"></canvas>
-                            <div class="absolute inset-0 flex flex-col items-center justify-end pb-6 pointer-events-none">
-                                <span id="unitValueText" class="text-4xl font-black text-slate-800 tracking-tighter">10</span>
-                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Unit (0-100)</span>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center pt-10">
+                                <span id="unitVal" class="text-5xl font-black tracking-tighter">10</span>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase">Unit</span>
                             </div>
                         </div>
-                    </div>
-                    <!-- Skala 2: Desibel -->
-                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col items-center">
-                        <div class="chart-container">
+                        <div class="chart-container flex flex-col items-center">
                             <canvas id="dbGauge"></canvas>
-                            <div class="absolute inset-0 flex flex-col items-center justify-end pb-6 pointer-events-none">
-                                <div class="flex items-baseline">
-                                    <span id="dbValueText" class="text-4xl font-black text-slate-800 tracking-tighter">40</span>
-                                    <span class="text-sm font-bold text-slate-400 ml-0.5">dB</span>
-                                </div>
-                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Level (30-120)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="statusMessageContainer" class="w-full p-6 rounded-2xl text-center transition-all duration-500 bg-green-100 text-green-800 border-2 border-green-200 shadow-sm">
-                    <h3 id="statusTitle" class="text-xl font-black mb-1">🟢 Yaşıl Zona</h3>
-                    <p id="statusDesc" class="font-medium">"Sinifdə ideal iş mühiti hökm sürür."</p>
-                </div>
-
-                <div id="buzzerAlert" class="hidden absolute top-6 right-6 bg-red-600 text-white px-4 py-2 rounded-xl text-xs font-black flex items-center shadow-2xl animate-bounce">
-                    🚨 SƏS SİQNALI AKTİVDİR
-                </div>
-            </div>
-
-            <div class="space-y-6">
-                <div class="bg-white rounded-3xl shadow-sm p-8 border border-slate-200">
-                    <h2 class="text-2xl font-black text-slate-800 mb-4">İdarəetmə Alqoritmi</h2>
-                    <p class="text-slate-600 mb-8 leading-relaxed">Cihaz hər 100 millisaniyədən bir ətraf mühitdən gələn səs dalğalarını rəqəmsal verilənlərə çevirir və desibel şkalasına uyğunlaşdırır.</p>
-                    
-                    <div class="flex p-1 bg-slate-100 rounded-2xl mb-8">
-                        <button class="tab-btn active flex-1 py-3 text-sm font-bold rounded-xl transition-all" onclick="switchTab('zonalar')">Məntiqi Zonalar</button>
-                        <button class="tab-btn flex-1 py-3 text-sm font-bold rounded-xl transition-all" onclick="switchTab('kod')">C++ (Arduino Code)</button>
-                    </div>
-
-                    <div id="tab-zonalar" class="space-y-4">
-                        <div class="group flex items-center p-4 rounded-2xl border border-transparent hover:border-green-200 hover:bg-green-50 transition-all cursor-pointer">
-                            <div class="w-12 h-12 bg-green-500 rounded-full mr-4 flex items-center justify-center text-white font-bold shadow-lg shadow-green-200 text-xl">1</div>
-                            <div>
-                                <h4 class="font-bold text-slate-800">Sakit Rejim (0-30 Unit)</h4>
-                                <p class="text-xs text-slate-500">Kitabxana və ya fərdi iş üçün uyğun səviyyə.</p>
-                            </div>
-                        </div>
-                        <div class="group flex items-center p-4 rounded-2xl border border-transparent hover:border-yellow-200 hover:bg-yellow-50 transition-all cursor-pointer">
-                            <div class="w-12 h-12 bg-yellow-500 rounded-full mr-4 flex items-center justify-center text-white font-bold shadow-lg shadow-yellow-200 text-xl">2</div>
-                            <div>
-                                <h4 class="font-bold text-slate-800">Aktiv Dərs (30-70 Unit)</h4>
-                                <p class="text-xs text-slate-500">Müzakirə və qrup işləri zamanı normal səviyyə.</p>
-                            </div>
-                        </div>
-                        <div class="group flex items-center p-4 rounded-2xl border border-transparent hover:border-red-200 hover:bg-red-50 transition-all cursor-pointer">
-                            <div class="w-12 h-12 bg-red-500 rounded-full mr-4 flex items-center justify-center text-white font-bold shadow-lg shadow-red-200 text-xl">3</div>
-                            <div>
-                                <h4 class="font-bold text-slate-800">Yüksək Küy (>70 Unit)</h4>
-                                <p class="text-xs text-slate-500">Təhlükəli səviyyə. Eşitmə sağlamlığına mənfi təsir edir.</p>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center pt-10">
+                                <span id="dbVal" class="text-5xl font-black tracking-tighter">40</span>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase">dB</span>
                             </div>
                         </div>
                     </div>
 
-                    <div id="tab-kod" class="hidden">
-                        <div class="bg-slate-900 rounded-2xl p-6 font-mono text-xs text-blue-300 overflow-x-auto shadow-2xl">
-<pre><code><span class="text-slate-500">// Sensor oxunuşu və dB çevrilməsi</span>
-int analogVal = analogRead(A0);
-float dB = 20 * log10(analogVal) + calibration;
+                    <div class="w-full mb-8">
+                        <input type="range" id="soundSlider" min="0" max="100" value="10" class="w-full h-3 bg-slate-200 rounded-full appearance-none cursor-pointer accent-blue-600">
+                    </div>
 
-<span class="text-slate-500">// Məntiq</span>
-if (dB > 80) {
-  digitalWrite(LED_RED, HIGH);
-  tone(BUZZER, 1000); 
-} else if (dB > 50) {
-  digitalWrite(LED_YELLOW, HIGH);
-  noTone(BUZZER);
-} else {
-  digitalWrite(LED_GREEN, HIGH);
-}</code></pre>
+                    <div id="statusBox" class="p-6 rounded-2xl text-center bg-green-100 text-green-800 border-2 border-green-200 transition-all duration-500">
+                        <h3 id="statusTitle" class="text-xl font-black mb-1">🟢 Yaşıl Zona</h3>
+                        <p id="statusDesc" class="font-medium text-sm italic">"Hər şey əladır, belə davam edin."</p>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <h2 class="text-4xl font-black text-slate-800 mb-6">Məntiqi Limitlər</h2>
+                    <div class="space-y-4">
+                        <div class="p-5 bg-green-50 rounded-2xl border-l-4 border-green-500">
+                            <p class="font-bold text-green-700">Yaşıl (< 20 Unit)</p>
+                            <p class="text-sm text-slate-500 italic">Sakitlik və ideal iş şəraiti.</p>
+                        </div>
+                        <div class="p-5 bg-yellow-50 rounded-2xl border-l-4 border-yellow-500">
+                            <p class="font-bold text-yellow-700">Sarı (20 - 60 Unit)</p>
+                            <p class="text-sm text-slate-500 italic">Xəbərdarlıq: Səs artır, diqqətli olun.</p>
+                        </div>
+                        <div class="p-5 bg-red-50 rounded-2xl border-l-4 border-red-500">
+                            <p class="font-bold text-red-700">Qırmızı (> 60 Unit)</p>
+                            <p class="text-sm text-slate-500 italic">Limit aşıldı! Buzzer (bip-bip) aktivləşir.</p>
+                        </div>
+                        <div class="p-5 bg-blue-50 rounded-2xl border-2 border-dashed border-blue-200">
+                            <p class="font-bold text-blue-700">Bildiriş (> 70 Unit)</p>
+                            <p class="text-sm text-slate-500 italic">Müəllim və rəhbərliyə avtomatik mesaj.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 3. Layihənin İnkişaf Mərhələləri (Roadmap) -->
-        <section class="bg-white rounded-3xl p-10 shadow-sm border border-slate-200">
-            <h2 class="text-3xl font-black text-slate-800 mb-12 text-center">İdeyadan Prototipə</h2>
-            <div class="relative ml-8 border-l-2 border-blue-100 space-y-12">
-                <div class="timeline-item relative pl-8">
-                    <h4 class="text-lg font-bold text-blue-600">Araşdırma və Analiz</h4>
-                    <p class="text-slate-500 text-sm mt-1">Siniflərdəki orta küy səviyyəsi ölçüldü və dərsin keyfiyyətinə təsiri öyrənildi.</p>
+        <!-- SLAYD 4: STEAM və Texniki -->
+        <section class="slide bg-slate-900 text-white">
+            <div class="max-w-5xl w-full">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-black mb-4">STEAM və Texniki Sadəlik</h2>
+                    <p class="text-slate-400">"Dahilik sadəlikdədir" prinsipi ilə 15-20 AZN büdcə.</p>
                 </div>
-                <div class="timeline-item relative pl-8">
-                    <h4 class="text-lg font-bold text-blue-600">Komponentlərin Seçimi</h4>
-                    <p class="text-slate-500 text-sm mt-1">Arduino Uno, səs sensoru və yüksək parlaqlıqlı LED-lər sınaqdan keçirildi.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white/5 border border-white/10 p-8 rounded-[2rem] text-center transform hover:scale-105 transition-all">
+                        <div class="text-5xl mb-6">🧠</div>
+                        <h4 class="font-black text-xl mb-2 text-blue-400">Arduino Uno</h4>
+                        <p class="text-sm text-slate-400">Sistemin beyni və idarəetmə mərkəzi.</p>
+                    </div>
+                    <div class="bg-white/5 border border-white/10 p-8 rounded-[2rem] text-center transform hover:scale-105 transition-all">
+                        <div class="text-5xl mb-6">👂</div>
+                        <h4 class="font-black text-xl mb-2 text-emerald-400">Səs Sensoru</h4>
+                        <p class="text-sm text-slate-400">Sinfin səsini "eşidən" qulaqlar.</p>
+                    </div>
+                    <div class="bg-white/5 border border-white/10 p-8 rounded-[2rem] text-center transform hover:scale-105 transition-all">
+                        <div class="text-5xl mb-6">📦</div>
+                        <h4 class="font-black text-xl mb-2 text-pink-400">Karton Korpus</h4>
+                        <p class="text-sm text-slate-400">Ekoloji və estetik dizayn nümunəsi.</p>
+                    </div>
                 </div>
-                <div class="timeline-item relative pl-8">
-                    <h4 class="text-lg font-bold text-blue-600">Proqramlaşdırma</h4>
-                    <p class="text-slate-500 text-sm mt-1">mBlock mühitində blok əsaslı və C++ mühitində sətir əsaslı kodlaşdırma tamamlandı.</p>
-                </div>
-                <div class="timeline-item relative pl-8">
-                    <h4 class="text-lg font-bold text-blue-600">Dizayn və Yığım</h4>
-                    <p class="text-slate-500 text-sm mt-1">Ekoloji təmiz karton korpus hazırlandı və bütün elektron hissələr montaj olundu.</p>
+
+                <div class="mt-16 grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
+                    <div class="text-xs uppercase tracking-widest text-slate-500 p-2 border border-white/5 rounded-xl">Science</div>
+                    <div class="text-xs uppercase tracking-widest text-slate-500 p-2 border border-white/5 rounded-xl">Technology</div>
+                    <div class="text-xs uppercase tracking-widest text-slate-500 p-2 border border-white/5 rounded-xl">Engineering</div>
+                    <div class="text-xs uppercase tracking-widest text-slate-500 p-2 border border-white/5 rounded-xl">Art</div>
+                    <div class="text-xs uppercase tracking-widest text-slate-500 p-2 border border-white/5 rounded-xl">Math</div>
                 </div>
             </div>
         </section>
 
-        <!-- 4. STEAM Bölməsi -->
-        <section class="bg-slate-100 rounded-3xl p-10 border border-slate-200">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-black text-slate-800">STEAM İnteqrasiyası</h2>
-                <p class="text-slate-500 mt-3 max-w-2xl mx-auto">Bu layihə şagirdlərin 5 fərqli sahədə biliklərini birləşdirir.</p>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-6">
-                <div class="bg-white p-6 rounded-2xl shadow-sm text-center border-b-4 border-blue-500 transform hover:scale-105 transition-all">
-                    <div class="text-4xl mb-4">🔬</div>
-                    <h4 class="font-bold text-slate-800">Science</h4>
-                    <p class="text-xs text-slate-400 mt-2 italic">Akustika və dalğa fizikası</p>
+        <!-- SLAYD 5: Yekun Nitq -->
+        <section class="slide bg-white text-slate-900">
+            <div class="max-w-4xl text-center">
+                <div class="mb-12 animate__animated animate__pulse animate__infinite">
+                    <span class="text-8xl">🚀</span>
                 </div>
-                <div class="bg-white p-6 rounded-2xl shadow-sm text-center border-b-4 border-indigo-500 transform hover:scale-105 transition-all">
-                    <div class="text-4xl mb-4">💻</div>
-                    <h4 class="font-bold text-slate-800">Technology</h4>
-                    <p class="text-xs text-slate-400 mt-2 italic">Mikrokontroller və sensorlar</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl shadow-sm text-center border-b-4 border-orange-500 transform hover:scale-105 transition-all">
-                    <div class="text-4xl mb-4">⚙️</div>
-                    <h4 class="font-bold text-slate-800">Engineering</h4>
-                    <p class="text-xs text-slate-400 mt-2 italic">Dövrə quruluşu və montaj</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl shadow-sm text-center border-b-4 border-pink-500 transform hover:scale-105 transition-all">
-                    <div class="text-4xl mb-4">🎨</div>
-                    <h4 class="font-bold text-slate-800">Art</h4>
-                    <p class="text-xs text-slate-400 mt-2 italic">Erqonomik korpus dizaynı</p>
-                </div>
-                <div class="bg-white p-6 rounded-2xl shadow-sm text-center border-b-4 border-emerald-500 transform hover:scale-105 transition-all">
-                    <div class="text-4xl mb-4">🧮</div>
-                    <h4 class="font-bold text-slate-800">Math</h4>
-                    <p class="text-xs text-slate-400 mt-2 italic">Statistika və müqayisə</p>
+                <h2 class="text-5xl font-black mb-8 leading-tight">Gəlin məktəblərimizi daha ağıllı edək!</h2>
+                <p class="text-xl text-slate-500 leading-relaxed mb-12">
+                    "Bu cihaz sadəcə alət deyil, o bizə özümüzü idarə etməyi öyrədir. Müəllimin 'sakit olun' deməsinə ehtiyac qalmır, texnologiya bizə nəzakətlə yol göstərir."
+                </p>
+                
+                <div class="bg-blue-600 text-white p-8 rounded-[2.5rem] shadow-2xl inline-block px-12">
+                    <p class="text-2xl font-black">Diqqətiniz üçün təşəkkürlər!</p>
+                    <p class="text-sm opacity-80 mt-2 tracking-widest uppercase">Bayramov Ömər, 8b</p>
                 </div>
             </div>
         </section>
 
-        <!-- 5. Tez-tez Verilən Suallar (Münsiflər üçün) -->
-        <section class="max-w-4xl mx-auto space-y-6">
-            <h2 class="text-3xl font-black text-slate-800 mb-8 text-center">Tez-tez Verilən Suallar</h2>
-            
-            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-                <h4 class="font-black text-slate-800 mb-2">Desibel ölçümü nə dərəcədə dəqiqdir?</h4>
-                <p class="text-slate-500 text-sm">Simulyatorda istifadə edilən alqoritm səs təzyiqini logaritmik şkala ilə real desibel (dB) vahidinə yaxınlaşdırır. Arduino-da isə sensorun kalibrasiyası ilə dəqiqlik artırıla bilər.</p>
-            </div>
-            
-            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-                <h4 class="font-black text-slate-800 mb-2">Layihənin gələcək inkişafı nədir?</h4>
-                <p class="text-slate-500 text-sm">Gələcəkdə Wi-Fi modul əlavə edərək gün ərzində səs səviyyəsini bulud sisteminə köçürmək və həftəlik statistika çıxarmaq planlaşdırılır.</p>
-            </div>
-            
-            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-                <h4 class="font-black text-slate-800 mb-2">Buzzer həmişə çalır?</h4>
-                <p class="text-slate-500 text-sm">Xeyr, buzzer yalnız səs səviyyəsi 85 dB-dən yuxarı qalxdıqda və sinifdə kəsharp küy olduqda xəbərdarlıq məqsədilə işə düşür.</p>
-            </div>
-        </section>
-
-        <!-- Final Footer Banner -->
-        <footer class="bg-slate-900 text-white rounded-3xl p-12 text-center shadow-2xl relative overflow-hidden">
-            <div class="absolute inset-0 bg-blue-600 opacity-10 pointer-events-none"></div>
-            <h2 class="text-4xl font-black mb-6">Ağıllı Məktəbə Doğru Birlikdə!</h2>
-            <p class="max-w-3xl mx-auto text-slate-400 text-lg leading-relaxed mb-10">
-                Bu layihə şagirdlərin intizamını cəza ilə deyil, texnoloji maarifləndirmə ilə təmin edir. Gələcəyin sinif otaqları artıq bu gündən başlayır.
-            </p>
-            <div class="flex justify-center space-x-4">
-                <div class="bg-white/5 border border-white/10 px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest text-slate-400">Arduino Uno R3</div>
-                <div class="bg-white/5 border border-white/10 px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest text-slate-400">mBlock v5.4</div>
-                <div class="bg-white/5 border border-white/10 px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest text-slate-400">DIY Electronics</div>
-            </div>
-        </footer>
-
-    </main>
-
-    <footer class="text-center py-8 text-slate-400 text-xs font-bold uppercase tracking-widest">
-        &copy; 2026 Səs Svetoforu - STEAM Layihə Təqdimatı
-    </footer>
+    </div>
 
     <script>
+        const container = document.getElementById('mainContainer');
+        const dotsContainer = document.getElementById('navDots');
+        const slides = document.querySelectorAll('.slide');
+        let currentSlide = 0;
+        let isMoving = false;
+
+        // Navigasiya nöqtələrini yarat
+        slides.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.className = `dot ${i === 0 ? 'active' : ''}`;
+            if (i === 1 || i === 2 || i === 4) dot.classList.add('dark-dot');
+            dot.addEventListener('click', () => goToSlide(i));
+            dotsContainer.appendChild(dot);
+        });
+
+        function updateDots() {
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentSlide);
+            });
+        }
+
+        function goToSlide(index) {
+            if (isMoving) return;
+            isMoving = true;
+            currentSlide = index;
+            container.style.transform = `translateY(-${currentSlide * 100}vh)`;
+            updateDots();
+            setTimeout(() => isMoving = false, 800);
+        }
+
+        // Mouse Wheel (Skroll) hadisəsi
+        window.addEventListener('wheel', (e) => {
+            if (e.deltaY > 0) {
+                if (currentSlide < slides.length - 1) goToSlide(currentSlide + 1);
+            } else {
+                if (currentSlide > 0) goToSlide(currentSlide - 1);
+            }
+        });
+
+        // Klaviatura (Oxlar)
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown') goToSlide(Math.min(currentSlide + 1, slides.length - 1));
+            if (e.key === 'ArrowUp') goToSlide(Math.max(currentSlide - 1, 0));
+        });
+
+        // SIMULYATOR MƏNTİQİ
         const slider = document.getElementById('soundSlider');
-        const unitText = document.getElementById('unitValueText');
-        const dbText = document.getElementById('dbValueText');
-        const statusContainer = document.getElementById('statusMessageContainer');
+        const unitDisplay = document.getElementById('unitVal');
+        const dbDisplay = document.getElementById('dbVal');
+        const statusBox = document.getElementById('statusBox');
         const statusTitle = document.getElementById('statusTitle');
         const statusDesc = document.getElementById('statusDesc');
-        const buzzerAlert = document.getElementById('buzzerAlert');
+        const notifBox = document.getElementById('notifBox');
         const micBtn = document.getElementById('micBtn');
-        
-        const colors = {
-            green: '#22c55e',
-            yellow: '#eab308',
-            red: '#ef4444',
-            bgTrack: '#f1f5f9'
-        };
 
-        const createGauge = (id) => {
-            const ctx = document.getElementById(id).getContext('2d');
-            return new Chart(ctx, {
+        const createGauge = (id, color) => {
+            return new Chart(document.getElementById(id).getContext('2d'), {
                 type: 'doughnut',
                 data: {
                     datasets: [{
                         data: [10, 90],
-                        backgroundColor: [colors.green, colors.bgTrack],
+                        backgroundColor: [color, '#e2e8f0'],
                         borderWidth: 0,
                         circumference: 180,
                         rotation: 270,
-                        cutout: '80%',
-                        borderRadius: 10
+                        cutout: '85%',
+                        borderRadius: 20
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false }, tooltip: { enabled: false } },
-                    animation: { duration: 400, easing: 'easeOutBack' }
+                    animation: { duration: 600, easing: 'easeOutQuart' }
                 }
             });
         };
 
-        const unitGauge = createGauge('unitGauge');
-        const dbGauge = createGauge('dbGauge');
+        const unitChart = createGauge('unitGauge', '#22c55e');
+        const dbChart = createGauge('dbGauge', '#3b82f6');
 
-        let audioCtx = null;
-        let oscillator = null;
-        let microphoneStream = null;
-        let analyzer = null;
-        let isMicEnabled = false;
+        let audioCtx, oscillator;
+
+        function updateSimulation(val) {
+            const dbVal = Math.round(30 + (val * 0.9));
+            unitDisplay.innerText = val;
+            dbDisplay.innerText = dbVal;
+
+            // Rəng və Status Limitləri
+            statusBox.className = "p-6 rounded-2xl text-center border-2 transition-all duration-500 shadow-sm";
+            let color = '#22c55e';
+
+            if (val < 20) {
+                statusBox.classList.add('bg-green-100', 'text-green-800', 'border-green-200');
+                statusTitle.innerText = "🟢 Yaşıl Zona";
+                statusDesc.innerText = '"Hər şey əladır, belə davam edin."';
+                color = '#22c55e';
+                notifBox.classList.add('hidden');
+                stopBuzzer();
+            } else if (val >= 20 && val <= 60) {
+                statusBox.classList.add('bg-yellow-100', 'text-yellow-800', 'border-yellow-200');
+                statusTitle.innerText = "🟡 Sarı Zona";
+                statusDesc.innerText = '"Səsiniz artır, diqqətli olun."';
+                color = '#eab308';
+                notifBox.classList.add('hidden');
+                stopBuzzer();
+            } else {
+                statusBox.classList.add('bg-red-100', 'text-red-800', 'border-red-200', 'blinking-bg');
+                statusTitle.innerText = "🔴 Qırmızı Zona";
+                statusDesc.innerText = val >= 70 ? '"MÜƏLLİMƏ BİLDİRİŞ GÖNDƏRİLDİ!"' : '"Limit aşıldı! Sakitliyi bərpa edin!"';
+                color = '#ef4444';
+                playBuzzer();
+                
+                if (val >= 70) notifBox.classList.remove('hidden');
+                else notifBox.classList.add('hidden');
+            }
+
+            unitChart.data.datasets[0].data = [val, 100 - val];
+            unitChart.data.datasets[0].backgroundColor[0] = color;
+            unitChart.update();
+
+            dbChart.data.datasets[0].data = [val, 100 - val];
+            dbChart.data.datasets[0].backgroundColor[0] = color;
+            dbChart.update();
+        }
 
         function playBuzzer() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (oscillator) return; 
+            if (oscillator) return;
             oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
+            const gain = audioCtx.createGain();
             oscillator.type = 'square';
-            oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); 
-            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); 
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
+            oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+            oscillator.connect(gain);
+            gain.connect(audioCtx.destination);
             oscillator.start();
         }
 
         function stopBuzzer() {
             if (oscillator) {
                 oscillator.stop();
-                oscillator.disconnect();
                 oscillator = null;
             }
         }
 
-        async function toggleMicrophone() {
-            if (isMicEnabled) { stopMicrophone(); return; }
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                isMicEnabled = true;
-                microphoneStream = stream;
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const source = audioCtx.createMediaStreamSource(stream);
-                analyzer = audioCtx.createAnalyser();
-                analyzer.fftSize = 512;
-                source.connect(analyzer);
-                micBtn.classList.add('mic-active', 'bg-red-500', 'text-white');
-                processAudio();
-            } catch (err) { console.error("Mikrofon rədd edildi:", err); }
-        }
+        slider.addEventListener('input', (e) => updateSimulation(parseInt(e.target.value)));
 
-        function stopMicrophone() {
-            isMicEnabled = false;
-            if (microphoneStream) microphoneStream.getTracks().forEach(track => track.stop());
-            micBtn.classList.remove('mic-active', 'bg-red-500', 'text-white');
-            stopBuzzer();
-        }
-
-        function processAudio() {
-            if (!isMicEnabled) return;
-            const dataArray = new Uint8Array(analyzer.frequencyBinCount);
-            analyzer.getByteFrequencyData(dataArray);
-            let avg = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
-            let val = Math.min(100, Math.round(avg * 1.5));
-            slider.value = val;
-            updateUI(val);
-            requestAnimationFrame(processAudio);
-        }
-
-        function updateUI(unitVal) {
-            // Unit 0-100 aralığıdır. Desibel isə 30-120 aralığı kimi hesablanır.
-            const dbVal = Math.round(30 + (unitVal / 100 * 90));
-            
-            unitText.innerText = unitVal;
-            dbText.innerText = dbVal;
-            
-            let activeColor = colors.green;
-            statusContainer.classList.remove('bg-green-100', 'text-green-800', 'border-green-200', 'bg-yellow-100', 'text-yellow-800', 'border-yellow-200', 'bg-red-100', 'text-red-900', 'border-red-300', 'blinking-bg');
-            buzzerAlert.classList.add('hidden');
-
-            if (unitVal < 30) {
-                activeColor = colors.green;
-                statusContainer.classList.add('bg-green-100', 'text-green-800', 'border-green-200');
-                statusTitle.innerText = "🟢 Sakit Rejim";
-                statusDesc.innerText = '"İdeal iş mühiti."';
-                stopBuzzer();
-            } else if (unitVal >= 30 && unitVal <= 70) {
-                activeColor = colors.yellow;
-                statusContainer.classList.add('bg-yellow-100', 'text-yellow-800', 'border-yellow-200');
-                statusTitle.innerText = "🟡 Normal Rejim";
-                statusDesc.innerText = '"Aktiv müzakirə davam edir."';
-                stopBuzzer();
+        // Mikrofon (Sadələşdirilmiş simulyasiya üçün)
+        let isMic = false;
+        micBtn.addEventListener('click', () => {
+            isMic = !isMic;
+            micBtn.classList.toggle('mic-active', isMic);
+            micBtn.classList.toggle('bg-red-600', isMic);
+            micBtn.classList.toggle('text-white', isMic);
+            if (isMic) {
+                const interval = setInterval(() => {
+                    if (!isMic) { clearInterval(interval); return; }
+                    const randomVal = Math.floor(Math.random() * 80);
+                    slider.value = randomVal;
+                    updateSimulation(randomVal);
+                }, 500);
             } else {
-                activeColor = colors.red;
-                statusContainer.classList.add('bg-red-100', 'text-red-900', 'border-red-300', 'blinking-bg');
-                statusTitle.innerText = "🔴 Kritik Səviyyə";
-                statusDesc.innerText = '"Küy limiti aşıldı! Diqqət!"';
-                buzzerAlert.classList.remove('hidden');
-                if (unitVal >= 85) playBuzzer(); else stopBuzzer();
+                stopBuzzer();
             }
+        });
 
-            // Unit Skalası Yeniləmə
-            unitGauge.data.datasets[0].data = [unitVal, 100 - unitVal];
-            unitGauge.data.datasets[0].backgroundColor = [activeColor, colors.bgTrack];
-            unitGauge.update();
-
-            // DB Skalası Yeniləmə (30-120 arasını 0-100 kimi göstəririk)
-            let dbNorm = ((dbVal - 30) / 90) * 100;
-            dbGauge.data.datasets[0].data = [dbNorm, 100 - dbNorm];
-            dbGauge.data.datasets[0].backgroundColor = [activeColor, colors.bgTrack];
-            dbGauge.update();
-        }
-
-        slider.addEventListener('input', (e) => updateUI(parseInt(e.target.value)));
-        micBtn.addEventListener('click', toggleMicrophone);
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`.tab-btn[onclick="switchTab('${tabId}')"]`).classList.add('active');
-            document.getElementById('tab-zonalar').classList.add('hidden');
-            document.getElementById('tab-kod').classList.add('hidden');
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-        }
-
-        updateUI(10);
     </script>
 </body>
 </html>
