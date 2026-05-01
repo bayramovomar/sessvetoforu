@@ -31,23 +31,23 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
+            padding: 1rem;
             box-sizing: border-box;
             position: relative;
+            overflow-y: auto;
         }
 
         .header-gradient {
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
         }
 
-        /* Fixed Logo Style */
         .fixed-logo {
             position: fixed;
-            top: 20px;
-            left: 20px;
+            top: 15px;
+            left: 15px;
             z-index: 1000;
-            width: 60px;
-            height: 60px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             border: 2px solid rgba(59, 130, 246, 0.5);
             box-shadow: 0 0 15px rgba(0,0,0,0.2);
@@ -56,29 +56,47 @@
             transition: transform 0.3s ease;
         }
 
+        @media (min-width: 768px) {
+            .fixed-logo {
+                width: 60px;
+                height: 60px;
+                top: 20px;
+                left: 20px;
+            }
+            .slide { padding: 2rem; overflow-y: hidden; }
+        }
+
         .fixed-logo:hover {
             transform: scale(1.1);
         }
 
         .nav-dots {
             position: fixed;
-            right: 20px;
+            right: 10px;
             top: 50%;
             transform: translateY(-50%);
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 10px;
             z-index: 100;
         }
 
+        @media (min-width: 768px) {
+            .nav-dots { right: 20px; gap: 15px; }
+        }
+
         .dot {
-            width: 12px;
-            height: 12px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.3);
             border: 2px solid transparent;
             cursor: pointer;
             transition: all 0.3s;
+        }
+
+        @media (min-width: 768px) {
+            .dot { width: 12px; height: 12px; }
         }
 
         .dot.active {
@@ -98,7 +116,11 @@
         .chart-container {
             position: relative;
             width: 100%;
-            height: 250px;
+            height: 180px;
+        }
+        
+        @media (min-width: 768px) {
+            .chart-container { height: 250px; }
         }
 
         .blinking-bg {
@@ -106,16 +128,6 @@
         }
         @keyframes blinker {
             50% { background-color: rgba(239, 68, 68, 0.15); }
-        }
-
-        .keyboard-hint {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 0.75rem;
-            z-index: 10;
         }
 
         #notifOverlay {
@@ -127,6 +139,7 @@
             display: none;
             align-items: center;
             justify-content: center;
+            padding: 1rem;
         }
 
         .sos-active {
@@ -141,191 +154,191 @@
         .logo-glow {
             filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.3));
         }
+
+        @media (max-width: 640px) {
+            h1 { font-size: 3rem !important; }
+            .section-title { font-size: 1.8rem !important; }
+            .card-text { font-size: 0.9rem !important; }
+        }
     </style>
 </head>
 <body>
 
-    <!-- HER SLAYDDA GÖRÜNƏN LOGO -->
     <img src="cropped_circle_image.jpg" alt="Logo" class="fixed-logo logo-glow">
 
     <div class="nav-dots" id="navDots"></div>
-    <div class="keyboard-hint">Navigasiya üçün skroll və ya ox düymələrindən istifadə edin</div>
 
     <div class="slide-container" id="mainContainer">
         
-        <!-- SLAYD 1: Giriş -->
+        <!-- SLAYD 1 -->
         <section class="slide header-gradient text-white">
-            <div class="max-w-4xl text-center animate__animated animate__fadeIn">
-                <div class="inline-block bg-blue-500/20 text-blue-300 px-4 py-1 rounded-full text-sm font-bold mb-6 tracking-widest uppercase border border-blue-500/30">
+            <div class="max-w-4xl text-center animate__animated animate__fadeIn px-4">
+                <div class="inline-block bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-xs md:text-sm font-bold mb-4 md:mb-6 tracking-widest uppercase border border-blue-500/30">
                     Süni İntellekt Dəstəkli Təhlükəsizlik
                 </div>
-                <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-100 via-white to-blue-200">
+                <h1 class="text-4xl md:text-8xl font-black tracking-tighter mb-4 md:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-100 via-white to-blue-200">
                     Səs işıqforu 1.0
                 </h1>
-                <p class="text-2xl md:text-4xl text-blue-100/80 font-medium italic">"Məktəbin Ağıllı və Təhlükəsiz Qoruyucusu"</p>
+                <p class="text-lg md:text-4xl text-blue-100/80 font-medium italic">"Məktəbin Ağıllı və Təhlükəsiz Qoruyucusu"</p>
             </div>
         </section>
 
-        <!-- SLAYD 2: Missiya və Problem -->
+        <!-- SLAYD 2 -->
         <section class="slide bg-slate-50">
-            <div class="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div class="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 items-center px-4">
                 <div class="animate__animated animate__fadeInLeft">
-                    <h2 class="text-4xl font-black text-slate-800 mb-8">Niyə Səssizlik və Təhlükəsizlik?</h2>
-                    <div class="space-y-6">
-                        <div class="bg-white p-8 rounded-3xl shadow-sm border-l-8 border-red-500">
-                            <h4 class="font-bold text-red-600 mb-3 uppercase text-sm tracking-widest">Problem</h4>
-                            <p class="text-slate-700 text-xl md:text-2xl leading-relaxed italic font-medium">"İdarəolunmaz səs-küy dərsi pozur, təhlükəli səslər (qışqırıq, partlayış) isə vaxtında eşidilmir."</p>
+                    <h2 class="text-2xl md:text-4xl font-black text-slate-800 mb-4 md:mb-8 section-title">Niyə Səssizlik və Təhlükəsizlik?</h2>
+                    <div class="space-y-4 md:space-y-6">
+                        <div class="bg-white p-5 md:p-8 rounded-2xl md:rounded-3xl shadow-sm border-l-8 border-red-500">
+                            <h4 class="font-bold text-red-600 mb-2 uppercase text-[10px] md:text-sm tracking-widest">Problem</h4>
+                            <p class="text-slate-700 text-base md:text-2xl leading-relaxed italic font-medium card-text">"İdarəolunmaz səs-küy dərsi pozur, təhlükəli səslər vaxtında eşidilmir."</p>
                         </div>
-                        <div class="bg-white p-8 rounded-3xl shadow-sm border-l-8 border-emerald-500">
-                            <h4 class="font-bold text-emerald-600 mb-3 uppercase text-sm tracking-widest">Həll</h4>
-                            <p class="text-slate-700 text-xl md:text-2xl leading-relaxed font-medium">Süni İntellekt (AI) vasitəsilə səsləri tanıyan və təhlükə anında dərhal "SOS" verən ekosistem.</p>
+                        <div class="bg-white p-5 md:p-8 rounded-2xl md:rounded-3xl shadow-sm border-l-8 border-emerald-500">
+                            <h4 class="font-bold text-emerald-600 mb-2 uppercase text-[10px] md:text-sm tracking-widest">Həll</h4>
+                            <p class="text-slate-700 text-base md:text-2xl leading-relaxed font-medium card-text">AI vasitəsilə səsləri tanıyan və təhlükə anında dərhal "SOS" verən ekosistem.</p>
                         </div>
                     </div>
                 </div>
-                <div class="bg-slate-900 rounded-[3rem] p-12 text-center text-white shadow-2xl animate__animated animate__fadeInRight">
-                    <span class="text-7xl block mb-6">🤖</span>
-                    <h3 class="text-3xl font-bold mb-8 tracking-tight">AI İnteqrasiyası</h3>
-                    <div class="grid grid-cols-1 gap-6">
-                        <div class="bg-white/5 border border-white/10 rounded-3xl p-8 text-left">
-                            <p class="text-2xl font-bold text-blue-400">🚨 SOS Sistemi</p>
-                            <p class="text-base text-slate-300 mt-2 italic font-medium">Təhlükə anında Direktor, Zavuç və Sinif rəhbərinə SMS/Bildiriş.</p>
+                <div class="bg-slate-900 rounded-2xl md:rounded-[3rem] p-6 md:p-12 text-center text-white shadow-2xl animate__animated animate__fadeInRight">
+                    <span class="text-4xl md:text-7xl block mb-4 md:mb-6">🤖</span>
+                    <h3 class="text-xl md:text-3xl font-bold mb-4 md:mb-8 tracking-tight">AI İnteqrasiyası</h3>
+                    <div class="grid grid-cols-1 gap-4 md:gap-6">
+                        <div class="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-8 text-left">
+                            <p class="text-lg md:text-2xl font-bold text-blue-400">🚨 SOS Sistemi</p>
+                            <p class="text-xs md:text-base text-slate-300 mt-1 italic font-medium">Təhlükə anında Direktor və Zavuça SMS/Bildiriş.</p>
                         </div>
-                        <div class="bg-white/5 border border-white/10 rounded-3xl p-8 text-left">
-                            <p class="text-2xl font-bold text-emerald-400">🧠 Səs Analizi</p>
-                            <p class="text-base text-slate-300 mt-2 italic font-medium">Silah, bomba və qorxulu uşaq qışqırığını dərhal seçir.</p>
+                        <div class="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-8 text-left">
+                            <p class="text-lg md:text-2xl font-bold text-emerald-400">🧠 Səs Analizi</p>
+                            <p class="text-xs md:text-base text-slate-300 mt-1 italic font-medium">Silah və qorxulu qışqırığı dərhal seçir.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- SLAYD 3: İnteraktiv Simulyator -->
+        <!-- SLAYD 3 -->
         <section class="slide bg-white" id="simulatorSlide">
-            <div class="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div class="bg-slate-50 rounded-[2.5rem] p-10 border border-slate-200 shadow-xl relative overflow-hidden">
-                    
+            <div class="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 items-center px-4 py-8">
+                <div class="bg-slate-50 rounded-2xl md:rounded-[2.5rem] p-5 md:p-10 border border-slate-200 shadow-xl relative overflow-hidden">
                     <div id="notifOverlay">
-                        <div id="sosAlertBox" class="bg-slate-900 text-white p-10 rounded-[3rem] shadow-2xl border-4 border-blue-600 text-center animate__animated animate__zoomIn max-w-sm relative">
-                            <button onclick="closeNotif()" class="absolute top-4 right-6 text-2xl font-bold text-white/50 hover:text-white transition-colors">✕</button>
-                            
-                            <div id="alertEmoji" class="text-6xl mb-6">⚠️</div>
-                            <h3 id="alertTitle" class="text-2xl font-black mb-4 uppercase tracking-tighter italic">Səs Həddi Aşıldı!</h3>
-                            <p id="alertBody" class="text-blue-400 font-bold mb-6 italic">Müəllimə avtomatik bildiriş göndərildi.</p>
-                            <div class="flex items-center justify-center gap-3 bg-white/10 p-3 rounded-2xl italic text-xs">
+                        <div id="sosAlertBox" class="bg-slate-900 text-white p-6 md:p-10 rounded-2xl md:rounded-[3rem] shadow-2xl border-4 border-blue-600 text-center animate__animated animate__zoomIn max-w-sm relative">
+                            <button onclick="closeNotif()" class="absolute top-2 right-4 text-xl font-bold text-white/50 hover:text-white transition-colors">✕</button>
+                            <div id="alertEmoji" class="text-4xl md:text-6xl mb-4">⚠️</div>
+                            <h3 id="alertTitle" class="text-lg md:text-2xl font-black mb-2 uppercase tracking-tighter italic">Səs Həddi Aşıldı!</h3>
+                            <p id="alertBody" class="text-blue-400 text-sm md:text-base font-bold mb-4 italic">Müəllimə avtomatik bildiriş göndərildi.</p>
+                            <div class="flex items-center justify-center gap-2 bg-white/10 p-2 rounded-xl italic text-[10px]">
                                 <span class="animate-pulse">📲</span>
                                 <span id="sosFooter">7a sinfi: Aktiv nəzarət</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="flex justify-between items-center mb-8">
-                        <h2 class="text-3xl font-black text-slate-800">AI Səs Təhlili</h2>
-                        <div class="flex gap-2">
-                             <button onclick="triggerSOS('Silah Səsi')" class="bg-red-600 text-white px-3 py-1 rounded-xl text-[10px] font-bold uppercase hover:bg-red-700 transition-colors">Silah Test</button>
-                             <button onclick="triggerSOS('Qışqırıq')" class="bg-orange-600 text-white px-3 py-1 rounded-xl text-[10px] font-bold uppercase hover:bg-orange-700 transition-colors">Qışqırıq Test</button>
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl md:text-3xl font-black text-slate-800">AI Səs Təhlili</h2>
+                        <div class="flex gap-1 md:gap-2">
+                             <button onclick="triggerSOS('Silah Səsi')" class="bg-red-600 text-white px-2 py-1 rounded-lg text-[8px] md:text-[10px] font-bold uppercase hover:bg-red-700">Silah Test</button>
+                             <button onclick="triggerSOS('Qışqırıq')" class="bg-orange-600 text-white px-2 py-1 rounded-lg text-[8px] md:text-[10px] font-bold uppercase hover:bg-orange-700">Qışqırıq Test</button>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-6 mb-8">
+                    <div class="grid grid-cols-2 gap-4 mb-6">
                         <div class="chart-container flex flex-col items-center">
                             <canvas id="unitGauge"></canvas>
-                            <div class="absolute inset-0 flex flex-col items-center justify-center pt-10">
-                                <span id="unitVal" class="text-5xl font-black tracking-tighter">10</span>
-                                <span class="text-[10px] font-bold text-slate-400 uppercase">Unit</span>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center pt-6">
+                                <span id="unitVal" class="text-2xl md:text-5xl font-black tracking-tighter">10</span>
+                                <span class="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase">Unit</span>
                             </div>
                         </div>
                         <div class="chart-container flex flex-col items-center">
                             <canvas id="dbGauge"></canvas>
-                            <div class="absolute inset-0 flex flex-col items-center justify-center pt-10">
-                                <span id="dbVal" class="text-5xl font-black tracking-tighter">40</span>
-                                <span class="text-[10px] font-bold text-slate-400 uppercase">dB</span>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center pt-6">
+                                <span id="dbVal" class="text-2xl md:text-5xl font-black tracking-tighter">40</span>
+                                <span class="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase">dB</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="w-full mb-8">
-                        <input type="range" id="soundSlider" min="0" max="100" value="10" class="w-full h-3 bg-slate-200 rounded-full appearance-none cursor-pointer accent-blue-600">
+                    <div class="w-full mb-6">
+                        <input type="range" id="soundSlider" min="0" max="100" value="10" class="w-full h-2 bg-slate-200 rounded-full appearance-none cursor-pointer accent-blue-600">
                     </div>
 
-                    <div id="statusBox" class="p-6 rounded-2xl text-center bg-green-100 text-green-800 border-2 border-green-200 transition-all duration-500 shadow-sm">
-                        <h3 id="statusTitle" class="text-xl font-black mb-1">🟢 Yaşıl Zona</h3>
-                        <p id="statusDesc" class="font-medium text-sm italic">"Hər şey əladır, belə davam edin."</p>
+                    <div id="statusBox" class="p-4 rounded-xl text-center bg-green-100 text-green-800 border-2 border-green-200 shadow-sm">
+                        <h3 id="statusTitle" class="text-lg font-black mb-1">🟢 Yaşıl Zona</h3>
+                        <p id="statusDesc" class="font-medium text-[10px] md:text-sm italic">"Hər şey əladər, belə davam edin."</p>
                     </div>
                 </div>
 
-                <div class="space-y-6">
-                    <h2 class="text-4xl font-black text-slate-800 mb-6">AI Necə İşləyir?</h2>
-                    <div class="space-y-4">
-                        <div class="p-6 bg-emerald-50 rounded-[1.5rem] border border-emerald-100 shadow-sm">
-                            <p class="font-bold text-emerald-700 text-lg">Təhlükəli Səs Təyini</p>
-                            <p class="text-sm text-slate-600 mt-1 italic font-medium leading-relaxed">Süni İntellekt silah, bomba və qorxulu qışqırıq səslərini 0.1 saniyədə tanıyır.</p>
-                        </div>
-                        <div class="p-6 bg-amber-50 rounded-[1.5rem] border border-amber-100 shadow-sm">
-                            <p class="font-bold text-amber-700 text-lg">SOS Bildirişləri</p>
-                            <p class="text-sm text-slate-600 mt-1 italic font-medium leading-relaxed">Direktor, zavuç və növbətçi müəllimlərin telefonunda "SOS" siqnalı çalınır.</p>
-                        </div>
-                        <div class="p-6 bg-blue-50 rounded-[1.5rem] border border-blue-100 shadow-sm">
-                            <p class="font-bold text-blue-700 text-lg">Məktəb-Geniş Şəbəkə</p>
-                            <p class="text-sm text-slate-600 mt-1 italic font-medium leading-relaxed">Bütün dəhlizlərdəki cihazlar eyni vaxtda xəbərdarlıq rejiminə keçir.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- SLAYD: Komandamız -->
-        <section class="slide bg-slate-50">
-            <div class="max-w-5xl w-full text-center">
-                <h2 class="text-5xl font-black text-slate-800 mb-16">Komanda</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="bg-white p-12 rounded-[2.5rem] shadow-xl border border-slate-100 transform hover:-translate-y-2 transition-all">
-                        <div class="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <svg class="w-12 h-12 text-slate-400" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                            </svg>
-                        </div>
-                        <h4 class="text-xl font-bold text-slate-800">Bayramov Ömər</h4>
-                    </div>
-                    <div class="bg-white p-12 rounded-[2.5rem] shadow-xl border border-slate-100 transform hover:-translate-y-2 transition-all">
-                        <div class="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <svg class="w-12 h-12 text-slate-400" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                            </svg>
-                        </div>
-                        <h4 class="text-xl font-bold text-slate-800">Həsənzadə Murad</h4>
-                    </div>
-                    <div class="bg-white p-12 rounded-[2.5rem] shadow-xl border border-slate-100 transform hover:-translate-y-2 transition-all">
-                        <div class="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <svg class="w-12 h-12 text-slate-400" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                            </svg>
-                        </div>
-                        <h4 class="text-xl font-bold text-slate-800">Ağacanov Hüseyn</h4>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- SLAYD: Tez-tez Verilən Suallar (FAQ) -->
-        <section class="slide bg-slate-50">
-            <div class="max-w-4xl w-full">
-                <h2 class="text-5xl font-black text-slate-800 mb-10 text-center">Tez-tez Verilən Suallar</h2>
                 <div class="space-y-4">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                        <p class="font-black text-blue-600 text-xl mb-2">Sistem şəxsi məlumatları toplayırmı?</p>
-                        <p class="text-slate-700 text-base md:text-lg italic font-medium leading-relaxed">Xeyr. Sistem yalnız səs dalğalarını analiz edir və heç bir danışığı səs yazısı kimi yadda saxlamır.</p>
+                    <h2 class="text-2xl md:text-4xl font-black text-slate-800 mb-2 md:mb-6">AI Necə İşləyir?</h2>
+                    <div class="space-y-3">
+                        <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-100 shadow-sm">
+                            <p class="font-bold text-emerald-700 text-sm md:text-lg">Təhlükəli Səs Təyini</p>
+                            <p class="text-[10px] md:text-sm text-slate-600 mt-1 italic leading-relaxed">Süni İntellekt təhlükəli səsləri 0.1 saniyədə tanıyır.</p>
+                        </div>
+                        <div class="p-4 bg-amber-50 rounded-xl border border-amber-100 shadow-sm">
+                            <p class="font-bold text-amber-700 text-sm md:text-lg">SOS Bildirişləri</p>
+                            <p class="text-[10px] md:text-sm text-slate-600 mt-1 italic leading-relaxed">Rəhbərliyin telefonunda dərhal "SOS" siqnalı çalınır.</p>
+                        </div>
+                        <div class="p-4 bg-blue-50 rounded-xl border border-blue-100 shadow-sm">
+                            <p class="font-bold text-blue-700 text-sm md:text-lg">Məktəb-Geniş Şəbəkə</p>
+                            <p class="text-[10px] md:text-sm text-slate-600 mt-1 italic leading-relaxed">Bütün cihazlar eyni vaxtda xəbərdarlıq rejiminə keçir.</p>
+                        </div>
                     </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                        <p class="font-black text-blue-600 text-xl mb-2">İnternet kəsilsə sistem işləyirmi?</p>
-                        <p class="text-slate-700 text-base md:text-lg italic font-medium leading-relaxed">Cihazın daxili prosessoru ən vacib funksiyaları oflayn rejimdə də idarə edə bilir, lakin bildirişlər üçün Wi-Fi tələb olunur.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLAYD: Komanda -->
+        <section class="slide bg-slate-50">
+            <div class="max-w-5xl w-full text-center px-4 py-8">
+                <h2 class="text-3xl md:text-5xl font-black text-slate-800 mb-8 md:ml-16">Komanda</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
+                    <!-- BAYRAMOV ÖMƏR -->
+                    <div class="bg-white p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] shadow-lg border border-slate-100 flex flex-col items-center">
+                        <div class="w-16 h-16 md:w-24 md:h-24 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 md:w-12 md:h-12 text-slate-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        </div>
+                        <h4 class="text-base md:text-xl font-bold text-slate-800 mb-3">Bayramov Ömər</h4>
+                        <div class="flex flex-col gap-2 w-full">
+                            <a href="https://instagram.com/omarrbayram" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm md:text-base font-medium transition-colors">Instagram: omarrbayram</a>
+                            <a href="https://linkedin.com/in/omar-bayramov" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm md:text-base font-medium transition-colors">LinkedIn: Omar Bayramov</a>
+                            <a href="https://linktr.ee/byramofh" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm md:text-base font-medium transition-colors">Linktree: byramofh</a>
+                        </div>
                     </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                        <p class="font-black text-blue-600 text-xl mb-2">Yanlış SOS siqnalı verilə bilərmi?</p>
-                        <p class="text-slate-700 text-base md:text-lg italic font-medium leading-relaxed">AI modelimiz minlərlə müxtəlif səs nümunəsi ilə öyrədilib. Yanılma payı 1%-dən aşağıdır.</p>
+                    <!-- HƏSƏNZADƏ MURAD -->
+                    <div class="bg-white p-6 md:p-12 rounded-2xl md:rounded-[2.5rem] shadow-lg border border-slate-100">
+                        <div class="w-16 h-16 md:w-24 md:h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
+                            <svg class="w-8 h-8 md:w-12 md:h-12 text-slate-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        </div>
+                        <h4 class="text-base md:text-xl font-bold text-slate-800">Həsənzadə Murad</h4>
                     </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                        <p class="font-black text-blue-600 text-xl mb-2">Sistemi hər sinifdə quraşdırmaq lazımdır?</p>
-                        <p class="text-slate-700 text-base md:text-lg italic font-medium leading-relaxed">Effektivlik üçün hər sinifdə və dəhlizlərin strateji nöqtələrində quraşdırılması tövsiyə olunur.</p>
+                    <!-- AĞACANOV HÜSEYN -->
+                    <div class="bg-white p-6 md:p-12 rounded-2xl md:rounded-[2.5rem] shadow-lg border border-slate-100">
+                        <div class="w-16 h-16 md:w-24 md:h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
+                            <svg class="w-8 h-8 md:w-12 md:h-12 text-slate-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        </div>
+                        <h4 class="text-base md:text-xl font-bold text-slate-800">Ağacanov Hüseyn</h4>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLAYD: FAQ -->
+        <section class="slide bg-slate-50">
+            <div class="max-w-4xl w-full px-4 py-8">
+                <h2 class="text-3xl md:text-5xl font-black text-slate-800 mb-6 md:mb-10 text-center">Suallar</h2>
+                <div class="space-y-3 md:space-y-4">
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-100">
+                        <p class="font-black text-blue-600 text-sm md:text-xl mb-1">Şəxsi məlumatlar?</p>
+                        <p class="text-slate-700 text-[10px] md:text-lg italic leading-relaxed">Xeyr. Sistem yalnız səs dalğalarını analiz edir, heç bir danışığı yadda saxlamır.</p>
+                    </div>
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-100">
+                        <p class="font-black text-blue-600 text-sm md:text-xl mb-1">İnternet kəsilsə?</p>
+                        <p class="text-slate-700 text-[10px] md:text-lg italic leading-relaxed">Daxili emal oflayn da işləyir, lakin bildirişlər üçün Wi-Fi lazımdır.</p>
+                    </div>
+                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-100">
+                        <p class="font-black text-blue-600 text-sm md:text-xl mb-1">Yanlış SOS?</p>
+                        <p class="text-slate-700 text-[10px] md:text-lg italic leading-relaxed">AI modelimiz minlərlə nümunə ilə öyrədilib. Yanılma payı 1%-dən azdır.</p>
                     </div>
                 </div>
             </div>
@@ -333,67 +346,54 @@
 
         <!-- SLAYD: Əlaqə -->
         <section class="slide bg-slate-100">
-            <div class="max-w-3xl w-full text-center">
-                <h2 class="text-5xl font-black text-slate-800 mb-12">Əlaqə</h2>
-                <div class="bg-white p-10 rounded-[2.5rem] shadow-xl border border-slate-200">
-                    <p class="text-slate-500 font-bold uppercase tracking-widest text-sm mb-4">Suallarınız üçün bizimlə əlaqə saxlayın</p>
-                    <div class="flex items-center justify-center gap-4 text-3xl font-black text-blue-600">
+            <div class="max-w-3xl w-full text-center px-4">
+                <h2 class="text-3xl md:text-5xl font-black text-slate-800 mb-8 md:mb-12">Əlaqə</h2>
+                <div class="bg-white p-6 md:p-10 rounded-2xl md:rounded-[2.5rem] shadow-xl border border-slate-200">
+                    <p class="text-slate-500 font-bold uppercase tracking-widest text-[10px] md:text-sm mb-4">Suallarınız üçün</p>
+                    <div class="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 text-base md:text-3xl font-black text-blue-600">
                         <span>📧</span>
-                        <a href="mailto:bayramovomar81@gmail.com" class="hover:underline">bayramovomar81@gmail.com</a>
+                        <a href="mailto:bayramovomar81@gmail.com" class="hover:underline break-all">bayramovomar81@gmail.com</a>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- SLAYD: STEAM və Texniki (İstəyinizlə yer dəyişdirildi) -->
+        <!-- SLAYD: STEAM -->
         <section class="slide bg-slate-900 text-white">
-            <div class="max-w-5xl w-full">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl font-black mb-4">STEAM və AI Texnologiyası</h2>
-                    <p class="text-slate-400"></p>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="bg-white/5 border border-white/10 p-8 rounded-[2rem] text-center transform hover:scale-105 transition-all">
-                        <div class="text-5xl mb-6">🧠</div>
-                        <h4 class="font-black text-xl mb-2 text-blue-400">ESP32 / Arduino</h4>
-                        <p class="text-sm text-slate-400">Wi-Fi dəstəkli, süni intellekt emalı üçün güclü beyin.</p>
+            <div class="max-w-5xl w-full px-4 py-8">
+                <h2 class="text-2xl md:text-4xl font-black mb-8 md:mb-16 text-center">STEAM və AI</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
+                    <div class="bg-white/5 border border-white/10 p-6 md:p-8 rounded-2xl text-center">
+                        <div class="text-3xl md:text-5xl mb-4">🧠</div>
+                        <h4 class="font-black text-lg md:text-xl mb-1 text-blue-400">ESP32</h4>
+                        <p class="text-[10px] md:text-sm text-slate-400">Wi-Fi dəstəkli AI emalı üçün güclü beyin.</p>
                     </div>
-                    <div class="bg-white/5 border border-white/10 p-8 rounded-[2rem] text-center transform hover:scale-105 transition-all">
-                        <div class="text-5xl mb-6">📡</div>
-                        <h4 class="font-black text-xl mb-2 text-emerald-400">Cloud AI</h4>
-                        <p class="text-sm text-slate-400">Səsləri buludda analiz edən neyron şəbəkələr.</p>
+                    <div class="bg-white/5 border border-white/10 p-6 md:p-8 rounded-2xl text-center">
+                        <div class="text-3xl md:text-5xl mb-4">📡</div>
+                        <h4 class="font-black text-lg md:text-xl mb-1 text-emerald-400">Cloud AI</h4>
+                        <p class="text-[10px] md:text-sm text-slate-400">Səsləri buludda analiz edən neyron şəbəkələr.</p>
                     </div>
-                    <div class="bg-white/5 border border-white/10 p-8 rounded-[2rem] text-center transform hover:scale-105 transition-all">
-                        <div class="text-5xl mb-6">📱</div>
-                        <h4 class="font-black text-xl mb-2 text-pink-400">Mobil Proqram</h4>
-                        <p class="text-sm text-slate-400">Rəhbərlik üçün ani SMS və SOS tətbiqi.</p>
+                    <div class="bg-white/5 border border-white/10 p-6 md:p-8 rounded-2xl text-center">
+                        <div class="text-3xl md:text-5xl mb-4">📱</div>
+                        <h4 class="font-black text-lg md:text-xl mb-1 text-pink-400">Mobil</h4>
+                        <p class="text-[10px] md:text-sm text-slate-400">Rəhbərlik üçün ani SOS tətbiqi.</p>
                     </div>
-                </div>
-
-                <div class="mt-16 grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
-                    <div class="text-xs uppercase tracking-widest text-slate-500 p-2 border border-white/5 rounded-xl">Science</div>
-                    <div class="text-xs uppercase tracking-widest text-slate-500 p-2 border border-white/5 rounded-xl">Technology</div>
-                    <div class="text-xs uppercase tracking-widest text-slate-500 p-2 border border-white/5 rounded-xl">Engineering</div>
-                    <div class="text-xs uppercase tracking-widest text-slate-500 p-2 border border-white/5 rounded-xl">Art</div>
-                    <div class="text-xs uppercase tracking-widest text-slate-500 p-2 border border-white/5 rounded-xl">Math</div>
                 </div>
             </div>
         </section>
 
-        <!-- SLAYD: Yekun Nitq -->
+        <!-- SLAYD: Yekun -->
         <section class="slide bg-white text-slate-900">
-            <div class="max-w-4xl text-center">
-                <div class="mb-12 animate__animated animate__pulse animate__infinite">
-                    <span class="text-8xl">🛡️</span>
+            <div class="max-w-4xl text-center px-4">
+                <div class="mb-8 md:mb-12 animate__animated animate__pulse animate__infinite">
+                    <span class="text-6xl md:text-8xl">🛡️</span>
                 </div>
-                <h2 class="text-5xl font-black mb-8 leading-tight">Məktəblərimizi AI ilə qoruyaq!</h2>
-                <p class="text-xl text-slate-500 leading-relaxed mb-12">
-                    "Bu layihə artıq sadəcə səs işıqforu deyil. O, məktəbin hər küncündə eşidən, analiz edən və hər bir şagirdin təhlükəsizliyini saniyələr ərzində təmin edən bir sistemdir."
+                <h2 class="text-3xl md:text-5xl font-black mb-6 md:mb-8">Məktəbləri AI ilə qoruyaq!</h2>
+                <p class="text-base md:text-xl text-slate-500 leading-relaxed mb-8 md:mb-12">
+                    "Bu sistem məktəbin hər bir şagirdinin təhlükəsizliyini saniyələr ərzində təmin edən bir ekosistemdir."
                 </p>
-                
-                <div class="bg-blue-600 text-white p-8 rounded-[2.5rem] shadow-2xl inline-block px-12">
-                    <p class="text-2xl font-black">Təhlükəsiz gələcək üçün təşəkkürlər!</p>
+                <div class="bg-blue-600 text-white p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] shadow-2xl inline-block px-8 md:px-12">
+                    <p class="text-lg md:text-2xl font-black">Təhlükəsiz gələcək!</p>
                 </div>
             </div>
         </section>
@@ -412,7 +412,6 @@
             slides.forEach((_, i) => {
                 const dot = document.createElement('div');
                 dot.className = `dot ${i === currentSlide ? 'active' : ''}`;
-                // Dark dots for slides with light backgrounds
                 if ([1, 2, 3, 4, 5, 6, 8].includes(i)) dot.classList.add('dark-dot');
                 dot.addEventListener('click', () => goToSlide(i));
                 dotsContainer.appendChild(dot);
@@ -436,6 +435,14 @@
         }
 
         createDots();
+
+        let startY = 0;
+        window.addEventListener('touchstart', (e) => { startY = e.touches[0].pageY; }, {passive: true});
+        window.addEventListener('touchend', (e) => {
+            let endY = e.changedTouches[0].pageY;
+            if (startY - endY > 50 && currentSlide < slides.length - 1) goToSlide(currentSlide + 1);
+            else if (endY - startY > 50 && currentSlide > 0) goToSlide(currentSlide - 1);
+        }, {passive: true});
 
         window.addEventListener('wheel', (e) => {
             if (e.deltaY > 0) {
@@ -497,19 +504,13 @@
         function triggerSOS(type) {
             sosModeActive = true;
             userClosedNotif = false;
-            
             notifOverlay.style.display = 'flex';
             sosAlertBox.classList.add('sos-active');
             alertEmoji.innerText = '🚨';
-            alertTitle.innerText = `KRİTİK TƏHLÜKƏ: ${type.toUpperCase()}`;
-            alertBody.innerText = "Süni İntellekt təhlükəli səs aşkar etdi! Direktor və Zavuca SOS siqnalı göndərildi.";
-            sosFooter.innerText = "Sistem dərhal kilitləndi və kömək çağırıldı.";
-            
+            alertTitle.innerText = `TƏHLÜKƏ: ${type.toUpperCase()}`;
+            alertBody.innerText = "SOS siqnalı göndərildi.";
+            sosFooter.innerText = "Sistem dərhal kömək çağırdı.";
             playSOSBuzzer();
-            
-            setTimeout(() => {
-                alertBody.innerHTML += "<br><span class='text-white text-xs mt-2 block'>✅ SMS Göndərildi (Direktor)</span>";
-            }, 1000);
         }
 
         function closeNotif() {
@@ -522,51 +523,30 @@
 
         function updateSimulation(val) {
             if (sosModeActive) return;
-
             const dbVal = Math.round(30 + (val * 0.9));
             unitDisplay.innerText = val;
             dbDisplay.innerText = dbVal;
-
-            statusBox.className = "p-6 rounded-2xl text-center border-2 transition-all duration-500 shadow-sm";
+            statusBox.className = "p-4 rounded-xl text-center border-2 shadow-sm transition-all";
             let color = '#22c55e';
-
             if (val < 20) {
                 statusBox.classList.add('bg-green-100', 'text-green-800', 'border-green-200');
-                statusTitle.innerText = "🟢 Yaşıl Zona";
-                statusDesc.innerText = '"Hər şey əladır, belə davam edin."';
-                color = '#22c55e';
-                notifOverlay.style.display = 'none';
-                stopBuzzer();
-            } else if (val >= 20 && val <= 60) {
+                statusTitle.innerText = "🟢 Yaşıl"; color = '#22c55e';
+                notifOverlay.style.display = 'none'; stopBuzzer();
+            } else if (val <= 60) {
                 statusBox.classList.add('bg-yellow-100', 'text-yellow-800', 'border-yellow-200');
-                statusTitle.innerText = "🟡 Sarı Zona";
-                statusDesc.innerText = '"Səsiniz artır, diqqətli olun."';
-                color = '#eab308';
-                notifOverlay.style.display = 'none';
-                stopBuzzer();
+                statusTitle.innerText = "🟡 Sarı"; color = '#eab308';
+                notifOverlay.style.display = 'none'; stopBuzzer();
             } else {
                 statusBox.classList.add('bg-red-100', 'text-red-800', 'border-red-200', 'blinking-bg');
-                statusTitle.innerText = "🔴 Qırmızı Zona";
-                statusDesc.innerText = val >= 70 ? '"AI: MÜƏLLİMƏ BİLDİRİŞ GÖNDƏRİLDİ!"' : '"Limit aşıldı! Sakitliyi bərpa edin!"';
-                color = '#ef4444';
+                statusTitle.innerText = "🔴 Qırmızı"; color = '#ef4444';
                 playBuzzer();
-                
                 if (val >= 70 && !userClosedNotif) {
                     notifOverlay.style.display = 'flex';
-                    alertEmoji.innerText = '⚠️';
-                    alertTitle.innerText = "Təhlükəli Səs Həddi!";
-                    alertBody.innerText = "Müəllimə və rəhbərliyə avtomatik bildiriş göndərildi.";
-                    sosFooter.innerText = "7a sinfi: 70+ Unit aşıldı!";
-                    sosAlertBox.classList.remove('sos-active');
-                } else if (val < 70) {
-                    notifOverlay.style.display = 'none';
                 }
             }
-
             unitChart.data.datasets[0].data = [val, 100 - val];
             unitChart.data.datasets[0].backgroundColor[0] = color;
             unitChart.update();
-
             dbChart.data.datasets[0].data = [val, 100 - val];
             dbChart.data.datasets[0].backgroundColor[0] = color;
             dbChart.update();
@@ -579,9 +559,8 @@
             const gain = audioCtx.createGain();
             oscillator.type = 'square';
             oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
-            oscillator.connect(gain);
-            gain.connect(audioCtx.destination);
+            gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+            oscillator.connect(gain); gain.connect(audioCtx.destination);
             oscillator.start();
         }
 
@@ -592,23 +571,13 @@
             const gain = audioCtx.createGain();
             oscillator.type = 'sawtooth';
             oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
-            oscillator.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.5);
-            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-            oscillator.connect(gain);
-            gain.connect(audioCtx.destination);
+            gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+            oscillator.connect(gain); gain.connect(audioCtx.destination);
             oscillator.start();
-            oscillator.loop = true;
         }
 
-        function stopBuzzer() {
-            if (oscillator) {
-                oscillator.stop();
-                oscillator = null;
-            }
-        }
-
+        function stopBuzzer() { if (oscillator) { oscillator.stop(); oscillator = null; } }
         slider.addEventListener('input', (e) => updateSimulation(parseInt(e.target.value)));
-
     </script>
 </body>
 </html>
