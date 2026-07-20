@@ -11,20 +11,24 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
 
+        /* Slaydların və skrollun düzgün işləməsi üçün vacib stillər */
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
             overflow: hidden; 
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
         }
 
+        /* Bütün slaydları saxlayan konteyner */
         .slide-container {
             height: 100vh;
             width: 100%;
             transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
         }
 
+        /* Hər bir slaydın ümumi stili */
         .slide {
             height: 100vh;
             width: 100%;
@@ -57,12 +61,7 @@
         }
 
         @media (min-width: 768px) {
-            .fixed-logo {
-                width: 70px;
-                height: 70px;
-                top: 20px;
-                left: 20px;
-            }
+            .fixed-logo { width: 70px; height: 70px; top: 20px; left: 20px; }
             .slide { padding: 2rem; overflow-y: hidden; }
         }
 
@@ -182,12 +181,23 @@
         .mic-active {
             filter: drop-shadow(0 0 8px currentColor);
         }
+
+        /* Həftəlik analiz düymələri üçün daxili stillər */
+        .day-btn {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .day-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
     </style>
 </head>
 <body>
 
-    <!-- Logo yeniləndi: İndi logo.png faylına istinad edir -->
-    <img src="./logo.png" alt="Səs İşiqforu Logo" class="fixed-logo logo-glow">
+    <img src="logo.png" alt="Səs İşiqforu Logo" class="fixed-logo logo-glow">
 
     <div class="nav-dots" id="navDots"></div>
 
@@ -200,7 +210,7 @@
                     Süni İntellekt Dəstəkli Təhlükəsizlik
                 </div>
                 <h1 class="text-4xl md:text-8xl font-black tracking-tighter mb-4 md:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-100 via-white to-blue-200">
-                    Səs işıqforu 
+                    Səs işıqforu 1.0
                 </h1>
                 <p class="text-lg md:text-4xl text-blue-100/80 font-medium italic">"Məktəbin Ağıllı və Təhlükəsiz Qoruyucusu"</p>
             </div>
@@ -210,7 +220,6 @@
         <section class="slide bg-slate-50">
             <div class="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 items-center px-4">
                 <div class="animate__animated animate__fadeInLeft">
-                    <!-- Yenilənmiş Başlıq -->
                     <h2 class="text-2xl md:text-4xl font-black text-slate-800 mb-4 md:mb-8 section-title">Niyə Səs İşıqforu?</h2>
                     <div class="space-y-4 md:space-y-6">
                         <div class="bg-white p-5 md:p-8 rounded-2xl md:rounded-3xl shadow-sm border-l-8 border-red-500">
@@ -229,7 +238,7 @@
                     <div class="grid grid-cols-1 gap-4 md:gap-6">
                         <div class="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-8 text-left">
                             <p class="text-lg md:text-2xl font-bold text-blue-400">🚨 SOS Sistemi</p>
-                            <p class="text-xs md:text-base text-slate-300 mt-1 italic font-medium">Məktəb rəhbərliyinə bildiriş göndərilir</p>
+                            <p class="text-xs md:text-base text-slate-300 mt-1 italic font-medium">məktəb rəhbərliyinə sms/bildiriş göndərilir</p>
                         </div>
                         <div class="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-8 text-left">
                             <p class="text-lg md:text-2xl font-bold text-emerald-400">🧠 Səs Analizi</p>
@@ -252,7 +261,7 @@
                             <p id="alertBody" class="text-blue-400 text-sm md:text-base font-bold mb-4 italic">Müəllimə avtomatik bildiriş göndərildi.</p>
                             <div class="flex items-center justify-center gap-2 bg-white/10 p-2 rounded-xl italic text-[10px]">
                                 <span class="animate-pulse">📲</span>
-                                <span id="sosFooter">8b sinfi: Aktiv nəzarət</span>
+                                <span id="sosFooter">7a sinfi: Aktiv nəzarət</span>
                             </div>
                         </div>
                     </div>
@@ -321,44 +330,56 @@
         <section class="slide bg-slate-50">
             <div class="max-w-6xl w-full px-4 py-8">
                 <div class="text-center mb-10">
-                    <h2 class="text-3xl md:text-5xl font-black text-slate-800 mb-2">Həftəlik Analiz</h2>
-                    <p class="text-slate-500 font-bold italic uppercase tracking-widest text-xs">8B Sinif Hesabatı</p>
+                    <h2 class="text-3xl md:text-5xl font-black text-slate-800 mb-2">Həftəlik Analiz Simulyatoru</h2>
+                    <p class="text-slate-500 font-bold italic uppercase tracking-widest text-xs">Günü seçin və həmin gün üçün səs səviyyəsini tənzimləyin</p>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-2 bg-white p-6 md:p-8 rounded-[2rem] shadow-xl border border-slate-200">
+                    <div class="lg:col-span-2 bg-white p-8 rounded-[2rem] shadow-xl border border-slate-200">
+                        <!-- GÜN SEÇİMİ PANELİ -->
+                        <div class="flex flex-wrap gap-2 mb-8 justify-center">
+                            <button onclick="selectDay(0)" id="btn0" class="day-btn active px-4 py-2 rounded-full border border-slate-200 font-bold text-xs uppercase">Bazar ertəsi</button>
+                            <button onclick="selectDay(1)" id="btn1" class="day-btn px-4 py-2 rounded-full border border-slate-200 font-bold text-xs uppercase">Çərşənbə axşamı</button>
+                            <button onclick="selectDay(2)" id="btn2" class="day-btn px-4 py-2 rounded-full border border-slate-200 font-bold text-xs uppercase">Çərşənbə</button>
+                            <button onclick="selectDay(3)" id="btn3" class="day-btn px-4 py-2 rounded-full border border-slate-200 font-bold text-xs uppercase">Cümə axşamı</button>
+                            <button onclick="selectDay(4)" id="btn4" class="day-btn px-4 py-2 rounded-full border border-slate-200 font-bold text-xs uppercase">Cümə</button>
+                        </div>
+
                         <div class="flex justify-between items-center mb-6">
-                            <h3 class="font-black text-slate-700 uppercase text-sm tracking-tighter">Səs Trendi (Ortalama)</h3>
+                            <h3 class="font-black text-slate-700 uppercase text-sm tracking-tighter" id="selectedDayLabel">Həftəlik Trend</h3>
                             <div class="flex gap-2 items-center">
                                 <span class="w-3 h-3 rounded-full bg-blue-500"></span>
-                                <span class="text-[10px] font-bold text-slate-400 italic">Unit / Gün</span>
+                                <span id="trendLabel" class="text-[10px] font-bold text-slate-400 italic">Hazırkı: 15 Unit</span>
                             </div>
                         </div>
-                        <div style="height: 300px; width: 100%;">
+                        <div style="height: 250px; width: 100%;">
                             <canvas id="weeklyStatsChart"></canvas>
+                        </div>
+                        <div class="mt-8">
+                            <input type="range" id="weeklySlider" min="0" max="100" value="15" class="w-full h-2 bg-slate-200 rounded-full appearance-none cursor-pointer accent-blue-600">
                         </div>
                     </div>
 
-                    <div class="space-y-4">
-                        <div class="bg-emerald-50 p-5 rounded-2xl border-l-8 border-emerald-500 shadow-md">
-                            <p class="text-[10px] font-black text-emerald-600 mb-1">1-Cİ GÜN</p>
-                            <p class="text-slate-800 font-bold text-sm leading-tight">8B sinfinin səs səviyyəsi <span class="text-emerald-700 underline">20-dən aşağı</span> oldu.</p>
+                    <div class="space-y-4" id="weeklyReportContainer">
+                        <div id="dayBox0" class="bg-emerald-50 p-5 rounded-2xl border-l-8 border-emerald-500 shadow-sm transition-all">
+                            <p class="text-[10px] font-black text-emerald-600 mb-1">Pazartesi</p>
+                            <p id="txt0" class="text-slate-800 font-bold text-sm">Stabil: 15 unit</p>
                         </div>
-                        <div class="bg-emerald-50 p-5 rounded-2xl border-l-8 border-emerald-500 shadow-md">
-                            <p class="text-[10px] font-black text-emerald-600 mb-1">2-Cİ GÜN</p>
-                            <p class="text-slate-800 font-bold text-sm leading-tight">8B sinfinin səs səviyyəsi <span class="text-emerald-700 underline">20-dən aşağı</span> oldu.</p>
+                        <div id="dayBox1" class="bg-emerald-50 p-5 rounded-2xl border-l-8 border-emerald-500 shadow-sm transition-all">
+                            <p class="text-[10px] font-black text-emerald-600 mb-1">Çərşənbə axşamı</p>
+                            <p id="txt1" class="text-slate-800 font-bold text-sm">Stabil: 12 unit</p>
                         </div>
-                        <div class="bg-emerald-50 p-5 rounded-2xl border-l-8 border-emerald-500 shadow-md">
-                            <p class="text-[10px] font-black text-emerald-600 mb-1">3-CÜ GÜN</p>
-                            <p class="text-slate-800 font-bold text-sm leading-tight">8B sinfinin səs səviyyəsi <span class="text-emerald-700 underline">20-dən aşağı</span> oldu.</p>
+                        <div id="dayBox2" class="bg-emerald-50 p-5 rounded-2xl border-l-8 border-emerald-500 shadow-sm transition-all">
+                            <p class="text-[10px] font-black text-emerald-600 mb-1">Çərşənbə</p>
+                            <p id="txt2" class="text-slate-800 font-bold text-sm">Stabil: 18 unit</p>
                         </div>
-                        <div class="bg-yellow-50 p-5 rounded-2xl border-l-8 border-yellow-500 shadow-md">
-                            <p class="text-[10px] font-black text-yellow-600 mb-1">4-CÜ GÜN</p>
-                            <p class="text-slate-800 font-bold text-sm leading-tight">8B sinfinin səs səviyyəsi <span class="text-yellow-700 underline">60 vahid</span> oldu.</p>
+                        <div id="dayBox3" class="bg-emerald-50 p-5 rounded-2xl border-l-8 border-emerald-500 shadow-sm transition-all">
+                            <p class="text-[10px] font-black text-emerald-600 mb-1">Cümə axşamı</p>
+                            <p id="txt3" class="text-slate-800 font-bold text-sm">Stabil: 15 unit</p>
                         </div>
-                        <div class="bg-emerald-50 p-5 rounded-2xl border-l-8 border-emerald-500 shadow-md">
-                            <p class="text-[10px] font-black text-emerald-600 mb-1">5-Cİ GÜN</p>
-                            <p class="text-slate-800 font-bold text-sm leading-tight">8B sinfinin səs səviyyəsi <span class="text-emerald-700 underline">20-dən aşağı</span> oldu.</p>
+                        <div id="dayBox4" class="bg-emerald-50 p-5 rounded-2xl border-l-8 border-emerald-500 shadow-sm transition-all">
+                            <p class="text-[10px] font-black text-emerald-600 mb-1">Cümə</p>
+                            <p id="txt4" class="text-slate-800 font-bold text-sm">Stabil: 11 unit</p>
                         </div>
                     </div>
                 </div>
@@ -369,38 +390,44 @@
         <section class="slide bg-slate-50">
             <div class="max-w-5xl w-full text-center px-4 py-8">
                 <h2 class="text-3xl md:text-5xl font-black text-slate-800 mb-12 text-center w-full">Komanda</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
-                    <div class="bg-white p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] shadow-lg border border-slate-100 flex flex-col items-start text-left">
-                        <div class="w-16 h-16 md:w-24 md:h-24 bg-slate-100 rounded-full flex items-center justify-center mb-4 self-center overflow-hidden">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Bayramov Ömər (Sosyal hasaplar we linkler meýdançasy) -->
+                    <div class="bg-white p-8 rounded-2xl md:rounded-[2.5rem] shadow-lg border border-slate-100 flex flex-col items-center text-center">
+                        <div class="w-16 h-16 md:w-24 md:h-24 bg-slate-100 rounded-full flex items-center justify-center mb-4 overflow-hidden">
                             <svg class="w-8 h-8 md:w-12 md:h-12 text-slate-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                         </div>
-                        <h4 class="text-base md:text-xl font-bold text-slate-800 mb-4 self-center">Bayramov Ömər</h4>
-                        <div class="flex flex-col gap-3 w-full">
-                            <a href="https://linktr.ee/byramofh" target="_blank" class="flex items-center gap-3 text-blue-600 hover:text-blue-800 text-base md:text-lg font-black transition-colors group">
+                        <h4 class="text-base md:text-xl font-bold text-slate-800 mb-6">Bayramov Ömər</h4>
+                        <div class="flex flex-col gap-3 w-full items-center">
+                            <a href="https://linktr.ee/byramofh" target="_blank" class="flex items-center justify-center gap-3 text-blue-600 hover:text-blue-800 text-base md:text-lg font-black transition-colors group">
                                 <svg class="w-6 h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
                                 <span>Linktree</span>
                             </a>
-                            <a href="https://www.linkedin.com/in/omar-bayramov-8522a2284/" target="_blank" class="flex items-center gap-3 text-sky-700 hover:text-sky-900 text-base md:text-lg font-black transition-colors group">
+                            <a href="https://www.linkedin.com/in/omar-bayramov-8522a2284/" target="_blank" class="flex items-center justify-center gap-3 text-sky-700 hover:text-sky-900 text-base md:text-lg font-black transition-colors group">
                                 <svg class="w-6 h-6 md:w-7 md:h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
                                 <span>LinkedIn</span>
                             </a>
-                            <a href="https://www.instagram.com/omarrbayram/" target="_blank" class="flex items-center gap-3 text-pink-600 hover:text-pink-800 text-base md:text-lg font-black transition-colors group">
+                            <a href="https://www.instagram.com/omarrbayram/" target="_blank" class="flex items-center justify-center gap-3 text-pink-600 hover:text-pink-800 text-base md:text-lg font-black transition-colors group">
                                 <svg class="w-6 h-6 md:w-7 md:h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
                                 <span>Instagram</span>
                             </a>
                         </div>
                     </div>
-                    <div class="bg-white p-6 md:p-12 rounded-2xl md:rounded-[2.5rem] shadow-lg border border-slate-100 flex flex-col items-center">
-                        <div class="w-16 h-16 md:w-24 md:h-24 bg-slate-100 rounded-full flex items-center justify-center mb-4 md:mb-6">
-                            <svg class="w-8 h-8 md:w-12 md:h-12 text-slate-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+
+                    <!-- Müraciət et düymələri bölümü -->
+                    <div class="md:col-span-2 bg-gradient-to-br from-slate-900 to-slate-800 p-8 rounded-[2.5rem] shadow-xl border border-slate-700/50 flex flex-col justify-between text-left text-white relative overflow-hidden">
+                        <div class="absolute -right-16 -top-16 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl"></div>
+                        <div class="absolute -left-16 -bottom-16 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl"></div>
+                        
+                        <div class="relative z-10">
+                            <span class="text-blue-400 text-xs font-bold uppercase tracking-widest bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">Bizə Qoşul</span>
+                            <h3 class="text-2xl md:text-4xl font-black mt-4 mb-2 tracking-tight">Bizimlə yeni layihələrdə çalışmaq istəyirsiniz?</h3>
+                            <p class="text-slate-300 text-sm md:text-base leading-relaxed mb-6 font-medium">Səs işıqforu innovasiya komandasına müraciət etmək və gələcək inkişaf addımlarımızda birgə çalışmaq üçün formunu doldurun!</p>
                         </div>
-                        <h4 class="text-base md:text-xl font-bold text-slate-800">Həsənzadə Murad</h4>
-                    </div>
-                    <div class="bg-white p-6 md:p-12 rounded-2xl md:rounded-[2.5rem] shadow-lg border border-slate-100 flex flex-col items-center">
-                        <div class="w-16 h-16 md:w-24 md:h-24 bg-slate-100 rounded-full flex items-center justify-center mb-4 md:mb-6">
-                            <svg class="w-8 h-8 md:w-12 md:h-12 text-slate-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        <div class="relative z-10 mt-auto">
+                            <button onclick="openApplyModal()" class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm uppercase px-8 py-4 rounded-2xl shadow-lg shadow-blue-500/10 transition-all hover:-translate-y-1">
+                                📝 Müraciət Et
+                            </button>
                         </div>
-                        <h4 class="text-base md:text-xl font-bold text-slate-800">Ağacanov Hüseyn</h4>
                     </div>
                 </div>
             </div>
@@ -483,6 +510,33 @@
 
     </div>
 
+    <!-- MÜRACİƏT EDİN MODAL FORMU (POPUP) -->
+    <div id="applyModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[2000] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-[2.5rem] p-6 md:p-8 max-w-md w-full shadow-2xl border border-slate-100 relative animate__animated animate__zoomIn">
+            <button onclick="closeApplyModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors text-xl font-bold">✕</button>
+            <h3 class="text-2xl font-black text-slate-800 mb-6 text-center">Müraciət Formu</h3>
+            <form id="applyForm" onsubmit="handleApplySubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Ad Soyad</label>
+                    <input type="text" required id="applyName" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ömər Bayramov">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Gmail</label>
+                    <input type="email" required id="applyEmail" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="numune@gmail.com">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Telefon Nömrəsi</label>
+                    <input type="tel" required id="applyPhone" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="+994 (50) 000-00-00">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Doğum Tarixi</label>
+                    <input type="date" required id="applyDob" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold p-3 rounded-xl transition-all shadow-lg hover:shadow-blue-500/20 mt-2">Göndər</button>
+            </form>
+        </div>
+    </div>
+
     <script>
         const container = document.getElementById('mainContainer');
         const dotsContainer = document.getElementById('navDots');
@@ -490,6 +544,11 @@
         let currentSlide = 0;
         let isMoving = false;
 
+        // Statistika məlumatları
+        let weeklyData = [15, 12, 18, 15, 11];
+        const dayNames = ['Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə'];
+
+        // Nöqtələr və naviqasiya qurulması
         function createDots() {
             dotsContainer.innerHTML = '';
             slides.forEach((_, i) => {
@@ -519,6 +578,7 @@
 
         createDots();
 
+        // Sürüşdürmə (swipe) və siçan çarxı (scroll) hadisələri
         let startY = 0;
         window.addEventListener('touchstart', (e) => { startY = e.touches[0].pageY; }, {passive: true});
         window.addEventListener('touchend', (e) => {
@@ -540,7 +600,7 @@
             if (e.key === 'ArrowUp') goToSlide(Math.max(currentSlide - 1, 0));
         });
 
-        // Simulyasiya Logic
+        // Simulyator və səs göstəriciləri
         const slider = document.getElementById('soundSlider');
         const unitDisplay = document.getElementById('unitVal');
         const dbDisplay = document.getElementById('dbVal');
@@ -720,20 +780,21 @@
             updateSimulation(parseInt(e.target.value));
         });
 
+        // --- HƏFTƏLİK ANALİZ SİSTEMİ ---
         const weeklyCtx = document.getElementById('weeklyStatsChart').getContext('2d');
-        new Chart(weeklyCtx, {
+        const weeklyChart = new Chart(weeklyCtx, {
             type: 'line',
             data: {
-                labels: ['1-ci Gün', '2-ci Gün', '3-cü Gün', '4-cü Gün', '5-ci Gün'],
+                labels: ['B.e', 'Ç.a', 'Çə', 'C.a', 'Cü'],
                 datasets: [{
-                    label: 'Orta Səs',
-                    data: [15, 12, 18, 60, 11],
+                    label: 'Səs',
+                    data: weeklyData,
                     borderColor: '#3b82f6',
                     backgroundColor: 'rgba(59, 130, 246, 0.1)',
                     fill: true,
                     tension: 0.4,
-                    pointBackgroundColor: (context) => context.dataIndex === 3 ? '#ef4444' : '#fff',
-                    pointBorderColor: (context) => context.dataIndex === 3 ? '#ef4444' : '#3b82f6',
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#3b82f6',
                     pointBorderWidth: 4,
                     pointRadius: 6
                 }]
@@ -753,6 +814,96 @@
                 plugins: { legend: { display: false } }
             }
         });
+
+        // selectDay funksiyası burada qlobal olaraq təyin olunur
+        window.selectDay = function(index) {
+            document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+            const activeBtn = document.getElementById('btn' + index);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+            
+            currentDayIndex = index;
+            document.getElementById('selectedDayLabel').innerText = dayNames[index] + " - Trend";
+            
+            const val = weeklyData[index];
+            document.getElementById('weeklySlider').value = val;
+            document.getElementById('trendLabel').innerText = `Hazırkı: ${val} Unit`;
+            
+            updateDayUI(index, val);
+        };
+
+        function updateDayUI(index, val) {
+            const box = document.getElementById('dayBox' + index);
+            const txt = document.getElementById('txt' + index);
+            if (!box || !txt) return;
+            
+            if (val > 60) {
+                box.className = "bg-red-50 p-5 rounded-2xl border-l-8 border-red-500 shadow-md scale-105 transition-all";
+                txt.innerText = `XƏBƏRDARLIQ: ${val} unit!`;
+            } else if (val > 25) {
+                box.className = "bg-yellow-50 p-5 rounded-2xl border-l-8 border-yellow-500 shadow-sm transition-all";
+                txt.innerText = `Artım var: ${val} unit`;
+            } else {
+                box.className = "bg-emerald-50 p-5 rounded-2xl border-l-8 border-emerald-500 shadow-sm transition-all";
+                txt.innerText = `Stabil: ${val} unit`;
+            }
+        }
+
+        document.getElementById('weeklySlider').addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            weeklyData[currentDayIndex] = val;
+            weeklyChart.data.datasets[0].data = [...weeklyData];
+            weeklyChart.update('none');
+            document.getElementById('trendLabel').innerText = `Hazırkı: ${val} Unit`;
+            updateDayUI(currentDayIndex, val);
+        });
+
+        // --- Müraciət modal funksionalları ---
+        window.openApplyModal = function() {
+            const modal = document.getElementById('applyModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        window.closeApplyModal = function() {
+            const modal = document.getElementById('applyModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        window.handleApplySubmit = function(event) {
+            event.preventDefault();
+            const name = document.getElementById('applyName').value;
+            const form = document.getElementById('applyForm');
+            
+            const successOverlay = document.createElement('div');
+            successOverlay.className = 'text-center py-6 animate__animated animate__fadeIn';
+            successOverlay.innerHTML = `
+                <span class="text-6xl block mb-4">🎉</span>
+                <h4 class="text-xl font-bold text-slate-800 mb-2">Müraciətiniz Qəbul Olundu!</h4>
+                <p class="text-slate-500 text-sm mb-6">Təşəkkür edirik, <strong>${name}</strong>. Məlumatlarınız uğurla qeydə alındı. Tezliklə sizinlə əlaqə saxlayacağıq.</p>
+                <button onclick="resetApplyForm()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-all shadow-md">Bağla</button>
+            `;
+            form.classList.add('hidden');
+            form.parentNode.appendChild(successOverlay);
+        }
+
+        window.resetApplyForm = function() {
+            closeApplyModal();
+            setTimeout(() => {
+                const form = document.getElementById('applyForm');
+                const successDiv = form.parentNode.querySelector('.text-center');
+                if (successDiv) successDiv.remove();
+                form.classList.remove('hidden');
+                form.reset();
+            }, 300);
+        }
+
+        window.onload = function() {
+            selectDay(0);
+            updateSimulation(10);
+        }
     </script>
 </body>
 </html>
