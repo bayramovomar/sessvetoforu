@@ -3,604 +3,640 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Səs işıqforu - Təqdimat</title>
+    <title>Səs İşıqforu - Ağıllı Məktəb Təhlükəsizliyi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
-        /* Slaydların və skrollun düzgün işləməsi üçün vacib stillər */
-        body, html {
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
             margin: 0;
             padding: 0;
-            height: 100%;
-            overflow: hidden; 
-            font-family: 'Inter', sans-serif;
-            background: #f8fafc;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f7f5f0; /* Yumşaq Bej Fon */
+            color: #0f172a;
         }
 
-        /* Bütün slaydları saxlayan konteyner */
-        .slide-container {
-            height: 100vh;
-            width: 100%;
-            transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+        /* Bento Box Stil Konsepsiyası */
+        .bento-card {
+            background: #ffffff;
+            border: 1px solid #e2ded4;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.03);
+            border-radius: 2rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        /* Hər bir slaydın ümumi stili */
-        .slide {
-            height: 100vh;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-            box-sizing: border-box;
-            position: relative;
-            overflow-y: auto;
-        }
-
-        .header-gradient {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        .bento-card:hover {
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.06);
         }
 
         .fixed-logo {
             position: fixed;
-            top: 15px;
-            left: 15px;
+            top: 18px;
+            left: 20px;
             z-index: 1000;
-            width: 45px;
-            height: 45px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            border: 2px solid rgba(59, 130, 246, 0.5);
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border: 2px solid #e2ded4;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             object-fit: cover;
             background: white;
             transition: transform 0.3s ease;
         }
-
-        @media (min-width: 768px) {
-            .fixed-logo { width: 70px; height: 70px; top: 20px; left: 20px; }
-            .slide { padding: 2rem; overflow-y: hidden; }
-        }
-
-        .fixed-logo:hover {
-            transform: scale(1.1);
-        }
-
-        .nav-dots {
-            position: fixed;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 100;
-        }
-
-        @media (min-width: 768px) {
-            .nav-dots { right: 20px; gap: 15px; }
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            border: 2px solid transparent;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        @media (min-width: 768px) {
-            .dot { width: 12px; height: 12px; }
-        }
-
-        .dot.active {
-            background: #3b82f6;
-            transform: scale(1.3);
-            border-color: white;
-        }
-
-        .dark-dot {
-            background: rgba(0, 0, 0, 0.2);
-        }
-        .dark-dot.active {
-            background: #1e293b;
-            border-color: #3b82f6;
-        }
-
-        .chart-container {
-            position: relative;
-            width: 100%;
-            height: 180px;
-        }
-        
-        @media (min-width: 768px) {
-            .chart-container { height: 250px; }
-        }
+        .fixed-logo:hover { transform: scale(1.08); }
 
         .blinking-bg {
             animation: blinker 1s linear infinite;
         }
         @keyframes blinker {
-            50% { background-color: rgba(239, 68, 68, 0.15); }
+            50% { background-color: rgba(244, 63, 94, 0.15); }
         }
 
-        #notifOverlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(8px);
-            z-index: 50;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-
-        .sos-active {
-            background-color: #ef4444 !important;
-            animation: sos-pulse 0.5s infinite alternate;
-        }
-        @keyframes sos-pulse {
-            from { opacity: 1; }
-            to { opacity: 0.6; }
-        }
-
-        .logo-glow {
-            filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.3));
-        }
-
-        @media (max-width: 640px) {
-            h1 { font-size: 3rem !important; }
-            .section-title { font-size: 1.8rem !important; }
-            .card-text { font-size: 0.9rem !important; }
-        }
-
-        .mic-vibrate {
-            animation: vibrate 0.1s linear infinite;
-        }
-        @keyframes vibrate {
-            0% { transform: translate(0); }
-            25% { transform: translate(2px, 2px); }
-            50% { transform: translate(0); }
-            75% { transform: translate(-2px, -2px); }
-            100% { transform: translate(0); }
-        }
-
-        #micIcon {
+        .map-pin {
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
-        #micIcon:hover {
-            transform: scale(1.1);
-        }
-        .mic-active {
-            filter: drop-shadow(0 0 8px currentColor);
+        .map-pin:hover {
+            transform: translateY(-2px) scale(1.08);
         }
 
-        /* Həftəlik analiz düymələri üçün daxili stillər */
         .day-btn {
             transition: all 0.2s ease;
             cursor: pointer;
         }
         .day-btn.active {
-            background-color: #3b82f6;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            background-color: #0f172a;
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.2);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f7f5f0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
         }
     </style>
 </head>
-<body>
+<body class="selection:bg-amber-200">
 
-    <img src="logo.png" alt="Səs İşiqforu Logo" class="fixed-logo logo-glow">
+    <!-- Sabit Loqo -->
+    <img src="logo.png" alt="Səs İşıqforu Loqo" class="fixed-logo">
 
-    <div class="nav-dots" id="navDots"></div>
+    <!-- Yuxarı Əsas Naviqasiya Barı -->
+    <header class="fixed top-0 right-0 left-0 z-50 px-4 md:px-8 py-3.5 bg-#f7f5f0/80 backdrop-blur-xl border-b border-stone-200/60 flex justify-end items-center gap-1 md:gap-3 text-xs md:text-sm font-semibold">
+        <a href="#haqqimizda" class="text-stone-700 hover:text-black px-3 py-1.5 rounded-xl transition-all">Haqqımızda</a>
+        <a href="#tetbiq" class="text-stone-700 hover:text-black px-3 py-1.5 rounded-xl transition-all">Tətbiq Sahələri</a>
+        <a href="#simulyator" class="text-stone-700 hover:text-black px-3 py-1.5 rounded-xl transition-all">Simulyator</a>
+        <a href="#statistika" class="text-stone-700 hover:text-black px-3 py-1.5 rounded-xl transition-all hidden sm:inline-block">Analiz</a>
+        <a href="#steam" class="text-stone-700 hover:text-black px-3 py-1.5 rounded-xl transition-all hidden md:inline-block">STEAM</a>
+        <a href="#komanda" class="text-stone-700 hover:text-black px-3 py-1.5 rounded-xl transition-all">Komanda</a>
+        <a href="#elaqe" class="bg-stone-900 hover:bg-black text-white px-4 py-2 rounded-full shadow-sm transition-all ml-1">Əlaqə</a>
+    </header>
 
-    <div class="slide-container" id="mainContainer">
+    <main class="max-w-6xl mx-auto px-4 pt-28 pb-20 space-y-16">
         
-        <!-- SLAYD 1 -->
-        <section class="slide header-gradient text-white">
-            <div class="max-w-4xl text-center animate__animated animate__fadeIn px-4">
-                <div class="inline-block bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-xs md:text-sm font-bold mb-4 md:mb-6 tracking-widest uppercase border border-blue-500/30">
-                    Süni İntellekt Dəstəkli Təhlükəsizlik
+        <!-- HERO GİRİŞ BÖLMƏSİ (BENTO HEADER) -->
+        <section class="min-h-[70vh] flex flex-col justify-center items-center text-center space-y-6 pt-4">
+            <div class="inline-flex items-center gap-2 bg-amber-100/90 text-amber-900 px-4 py-2 rounded-full text-xs font-bold tracking-widest uppercase border border-amber-200/80 shadow-sm">
+                <span>🤖</span> Süni İntellekt Dəstəkli Təhlükəsizlik
+            </div>
+
+            <h1 class="text-5xl sm:text-7xl md:text-8xl font-black tracking-tight text-slate-900 leading-none">
+                Səs işıqforu <span class="text-indigo-600">1.0</span>
+            </h1>
+
+            <p class="text-lg md:text-2xl text-stone-600 font-medium italic max-w-2xl">
+                "Məktəbin Ağıllı və Təhlükəsiz Qoruyucusu"
+            </p>
+
+            <div class="flex flex-wrap justify-center gap-3 pt-2">
+                <a href="#simulyator" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-7 py-3.5 rounded-2xl shadow-lg shadow-indigo-500/20 transition-all hover:-translate-y-0.5">
+                    🎛️ Səs Simulyatoru
+                </a>
+                <a href="#haqqimizda" class="bg-white hover:bg-stone-50 text-slate-800 font-bold px-7 py-3.5 rounded-2xl border border-stone-200 shadow-sm transition-all">
+                    📌 Layihə Konsepsiyası
+                </a>
+            </div>
+
+            <!-- Bento Özet Kartları -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full pt-10 text-left">
+                <div class="bento-card p-5 border-l-4 border-indigo-500">
+                    <span class="text-xs font-bold text-stone-400 uppercase tracking-wider block">Cavab Müddəti</span>
+                    <span class="text-2xl font-black text-slate-900 mt-1 block">0.1 San</span>
+                    <span class="text-[11px] text-stone-500 mt-0.5 block">AI Ani Analizi</span>
                 </div>
-                <h1 class="text-4xl md:text-8xl font-black tracking-tighter mb-4 md:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-100 via-white to-blue-200">
-                    Səs işıqforu 1.0
-                </h1>
-                <p class="text-lg md:text-4xl text-blue-100/80 font-medium italic">"Məktəbin Ağıllı və Təhlükəsiz Qoruyucusu"</p>
+                <div class="bento-card p-5 border-l-4 border-rose-500">
+                    <span class="text-xs font-bold text-stone-400 uppercase tracking-wider block">SOS Bildiriş</span>
+                    <span class="text-2xl font-black text-slate-900 mt-1 block">SMS / App</span>
+                    <span class="text-[11px] text-stone-500 mt-0.5 block">Rəhbərliyə Ani Siqnal</span>
+                </div>
+                <div class="bento-card p-5 border-l-4 border-amber-500">
+                    <span class="text-xs font-bold text-stone-400 uppercase tracking-wider block">İdarəetmə</span>
+                    <span class="text-2xl font-black text-slate-900 mt-1 block">7/24 IoT</span>
+                    <span class="text-[11px] text-stone-500 mt-0.5 block">Mərkəzi Monitorinq</span>
+                </div>
+                <div class="bento-card p-5 border-l-4 border-emerald-500">
+                    <span class="text-xs font-bold text-stone-400 uppercase tracking-wider block">Mühit</span>
+                    <span class="text-2xl font-black text-slate-900 mt-1 block">100% Avtonom</span>
+                    <span class="text-[11px] text-stone-500 mt-0.5 block">Nizam-intizam Qorunması</span>
+                </div>
             </div>
         </section>
 
-        <!-- SLAYD 2 -->
-        <section class="slide bg-slate-50">
-            <div class="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 items-center px-4">
-                <div class="animate__animated animate__fadeInLeft">
-                    <h2 class="text-2xl md:text-4xl font-black text-slate-800 mb-4 md:mb-8 section-title">Niyə Səs İşıqforu?</h2>
-                    <div class="space-y-4 md:space-y-6">
-                        <div class="bg-white p-5 md:p-8 rounded-2xl md:rounded-3xl shadow-sm border-l-8 border-red-500">
-                            <h4 class="font-bold text-red-600 mb-2 uppercase text-[10px] md:text-sm tracking-widest">Problem</h4>
-                            <p class="text-slate-700 text-base md:text-2xl leading-relaxed italic font-medium card-text">"İdarəolunmaz səs-küy dərsi pozur, təhlükəli səslər vaxtında eşidilmir."</p>
+        <!-- HAQQIMIZDA / PROBLEM VƏ HƏLL (BENTO LAYOUT) -->
+        <section id="haqqimizda" class="scroll-mt-28 space-y-6">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-indigo-600 bg-indigo-50 px-3.5 py-1.5 rounded-full border border-indigo-100">Layihənin Fəlsəfəsi</span>
+                    <h2 class="text-3xl md:text-5xl font-black text-slate-900 mt-2">Niyə Səs İşıqforu?</h2>
+                </div>
+                <p class="text-stone-600 text-sm max-w-md">Məktəb şəraitində dərs prosesinin pozulmasının qarşısını alan və kritik səsləri tanıyan ekosistem.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                <!-- Problem Kartı -->
+                <div class="bento-card md:col-span-6 p-8 border-t-8 border-rose-500 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-extrabold text-rose-600 uppercase tracking-widest bg-rose-50 px-3 py-1 rounded-full">Mövcud Problem</span>
+                            <span class="text-2xl">⚠️</span>
                         </div>
-                        <div class="bg-white p-5 md:p-8 rounded-2xl md:rounded-3xl shadow-sm border-l-8 border-emerald-500">
-                            <h4 class="font-bold text-emerald-600 mb-2 uppercase text-[10px] md:text-sm tracking-widest">Həll</h4>
-                            <p class="text-slate-700 text-base md:text-2xl leading-relaxed font-medium card-text">AI vasitəsilə səsləri tanıyan və təhlükə anında dərhal "SOS" verən ekosistem.</p>
-                        </div>
+                        <p class="text-slate-800 text-lg md:text-xl font-bold leading-relaxed">
+                            "İdarəolunmaz səs-küy dərsi pozur, gündəlik həyatımızdakı yüksək səslər məsələn: silah səsləri, bomba səsləri və s. vaxtında eşidilmir."
+                        </p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-stone-100 text-xs text-stone-500 font-medium">
+                        Müəllimlərin fiziki müdaxilə ehtiyacını azaldaraq diqqəti təhsilə yönəldir.
                     </div>
                 </div>
-                <div class="bg-slate-900 rounded-2xl md:rounded-[3rem] p-6 md:p-12 text-center text-white shadow-2xl animate__animated animate__fadeInRight">
-                    <span class="text-4xl md:text-7xl block mb-4 md:mb-6">🤖</span>
-                    <h3 class="text-xl md:text-3xl font-bold mb-4 md:mb-8 tracking-tight">AI İnteqrasiyası</h3>
-                    <div class="grid grid-cols-1 gap-4 md:gap-6">
-                        <div class="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-8 text-left">
-                            <p class="text-lg md:text-2xl font-bold text-blue-400">🚨 SOS Sistemi</p>
-                            <p class="text-xs md:text-base text-slate-300 mt-1 italic font-medium">məktəb rəhbərliyinə sms/bildiriş göndərilir</p>
+
+                <!-- Həll Kartı -->
+                <div class="bento-card md:col-span-6 p-8 border-t-8 border-emerald-500 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-extrabold text-emerald-600 uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full">Ağıllı Həll Yolu</span>
+                            <span class="text-2xl">💡</span>
                         </div>
-                        <div class="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-8 text-left">
-                            <p class="text-lg md:text-2xl font-bold text-emerald-400">🧠 Səs Analizi</p>
-                            <p class="text-xs md:text-base text-slate-300 mt-1 italic font-medium">Silah və qorxulu qışqırığı dərhal seçir.</p>
-                        </div>
+                        <p class="text-slate-800 text-lg md:text-xl font-bold leading-relaxed">
+                            "AI vasitəsilə səsləri tanıyan və təhlükə anında dərhal məktəb rəhbərliyinə sms/bildiriş göndərən ekosistem."
+                        </p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-stone-100 text-xs text-stone-500 font-medium">
+                        Təhlükəli səs aşkar edildikdə avtomatik lokal və mərkəzi xəbərdarlıq rejimi işə düşür.
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- SLAYD 3 (Simulyator) -->
-        <section class="slide bg-white" id="simulatorSlide">
-            <div class="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 items-center px-4 py-8">
-                <div class="bg-slate-50 rounded-2xl md:rounded-[2.5rem] p-5 md:p-10 border border-slate-200 shadow-xl relative overflow-hidden">
-                    <div id="notifOverlay">
-                        <div id="sosAlertBox" class="bg-slate-900 text-white p-6 md:p-10 rounded-2xl md:rounded-[3rem] shadow-2xl border-4 border-blue-600 text-center animate__animated animate__zoomIn max-w-sm relative">
-                            <button onclick="closeNotif()" class="absolute top-2 right-4 text-xl font-bold text-white/50 hover:text-white transition-colors">✕</button>
-                            <div id="alertEmoji" class="text-4xl md:text-6xl mb-4">⚠️</div>
-                            <h3 id="alertTitle" class="text-lg md:text-2xl font-black mb-2 uppercase tracking-tighter italic">Səs Həddi Aşıldı!</h3>
-                            <p id="alertBody" class="text-blue-400 text-sm md:text-base font-bold mb-4 italic">Müəllimə avtomatik bildiriş göndərildi.</p>
-                            <div class="flex items-center justify-center gap-2 bg-white/10 p-2 rounded-xl italic text-[10px]">
-                                <span class="animate-pulse">📲</span>
-                                <span id="sosFooter">7a sinfi: Aktiv nəzarət</span>
-                            </div>
-                        </div>
+        <!-- HARDAN İSTİFADƏ ETMƏK OLAR VƏ TELEFONDA İNTERAKTİV XƏRİTƏ -->
+        <section id="tetbiq" class="scroll-mt-28 bento-card p-8 md:p-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+                
+                <!-- Sol: Tətbiq oluna biləcək mühitlər -->
+                <div class="lg:col-span-6 space-y-6">
+                    <div>
+                        <span class="text-indigo-600 text-xs font-bold uppercase tracking-widest bg-indigo-50 px-3.5 py-1.5 rounded-full border border-indigo-100">İnteqrasiya Nöqtələri</span>
+                        <h2 class="text-3xl md:text-4xl font-black text-slate-900 mt-2">Hardan İstifadə Etmək Olar?</h2>
+                        <p class="text-stone-600 text-sm mt-2">Səs işıqforu 1.0 səs nəzarəti və təhlükəsizlik tələb olunan hər bir ictimai məkana uyğunlaşdırıla bilir.</p>
                     </div>
 
-                    <div class="flex justify-between items-center mb-6">
-                        <div class="flex items-center gap-3">
-                            <h2 class="text-xl md:text-3xl font-black text-slate-800">AI Səs Təhlili</h2>
-                            <div id="micIcon" onclick="toggleLiveMic()" title="Canlı səsi aktiv et" class="text-2xl md:text-3xl text-slate-400 transition-all duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mic"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-                            </div>
-                        </div>
-                        <div class="flex gap-1 md:gap-2">
-                             <button onclick="triggerSOS('Silah Səsi')" class="bg-red-600 text-white px-2 py-1 rounded-lg text-[8px] md:text-[10px] font-bold uppercase hover:bg-red-700">Silah Test</button>
-                             <button onclick="triggerSOS('Qışqırıq')" class="bg-orange-600 text-white px-2 py-1 rounded-lg text-[8px] md:text-[10px] font-bold uppercase hover:bg-orange-700">Qışqırıq Test</button>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4 mb-6">
-                        <div class="chart-container flex flex-col items-center">
-                            <canvas id="unitGauge"></canvas>
-                            <div class="absolute inset-0 flex flex-col items-center justify-center pt-6">
-                                <span id="unitVal" class="text-2xl md:text-5xl font-black tracking-tighter">10</span>
-                                <span class="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase">Unit</span>
-                            </div>
-                        </div>
-                        <div class="chart-container flex flex-col items-center">
-                            <canvas id="dbGauge"></canvas>
-                            <div class="absolute inset-0 flex flex-col items-center justify-center pt-6">
-                                <span id="dbVal" class="text-2xl md:text-5xl font-black tracking-tighter">40</span>
-                                <span class="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase">dB</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="w-full mb-6">
-                        <input type="range" id="soundSlider" min="0" max="100" value="10" class="w-full h-2 bg-slate-200 rounded-full appearance-none cursor-pointer accent-blue-600">
-                    </div>
-
-                    <div id="statusBox" class="p-4 rounded-xl text-center bg-green-100 text-green-800 border-2 border-green-200 shadow-sm">
-                        <h3 id="statusTitle" class="text-lg font-black mb-1">🟢 Yaşıl Zona</h3>
-                        <p id="statusDesc" class="font-medium text-[10px] md:text-sm italic">"Hər şey əladər, belə davam edin."</p>
-                    </div>
-                </div>
-
-                <div class="space-y-4">
-                    <h2 class="text-2xl md:text-4xl font-black text-slate-800 mb-2 md:mb-6">AI Necə İşləyir?</h2>
                     <div class="space-y-3">
-                        <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-100 shadow-sm">
-                            <p class="font-bold text-emerald-700 text-sm md:text-lg">Təhlükəli Səs Təyini</p>
-                            <p class="text-[10px] md:text-sm text-slate-600 mt-1 italic leading-relaxed">Süni İntellekt təhlükəli səsləri 0.1 saniyədə tanıyır.</p>
-                        </div>
-                        <div class="p-4 bg-amber-50 rounded-xl border border-amber-100 shadow-sm">
-                            <p class="font-bold text-amber-700 text-sm md:text-lg">SOS Bildirişləri</p>
-                            <p class="text-[10px] md:text-sm text-slate-600 mt-1 italic leading-relaxed">Rəhbərliyin telefonunda dərhal "SOS" siqnalı çalınır.</p>
-                        </div>
-                        <div class="p-4 bg-blue-50 rounded-xl border border-blue-100 shadow-sm">
-                            <p class="font-bold text-blue-700 text-sm md:text-lg">Məktəb-Geniş Şəbəkə</p>
-                            <p class="text-[10px] md:text-sm text-slate-600 mt-1 italic leading-relaxed">Bütün cihazlar eyni vaxtda xəbərdarlıq rejiminə keçir.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- SLAYD: Həftəlik Statistika -->
-        <section class="slide bg-slate-50">
-            <div class="max-w-6xl w-full px-4 py-8">
-                <div class="text-center mb-10">
-                    <h2 class="text-3xl md:text-5xl font-black text-slate-800 mb-2">Həftəlik Analiz Simulyatoru</h2>
-                    <p class="text-slate-500 font-bold italic uppercase tracking-widest text-xs">Günü seçin və həmin gün üçün səs səviyyəsini tənzimləyin</p>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-2 bg-white p-8 rounded-[2rem] shadow-xl border border-slate-200">
-                        <!-- GÜN SEÇİMİ PANELİ -->
-                        <div class="flex flex-wrap gap-2 mb-8 justify-center">
-                            <button onclick="selectDay(0)" id="btn0" class="day-btn active px-4 py-2 rounded-full border border-slate-200 font-bold text-xs uppercase">Bazar ertəsi</button>
-                            <button onclick="selectDay(1)" id="btn1" class="day-btn px-4 py-2 rounded-full border border-slate-200 font-bold text-xs uppercase">Çərşənbə axşamı</button>
-                            <button onclick="selectDay(2)" id="btn2" class="day-btn px-4 py-2 rounded-full border border-slate-200 font-bold text-xs uppercase">Çərşənbə</button>
-                            <button onclick="selectDay(3)" id="btn3" class="day-btn px-4 py-2 rounded-full border border-slate-200 font-bold text-xs uppercase">Cümə axşamı</button>
-                            <button onclick="selectDay(4)" id="btn4" class="day-btn px-4 py-2 rounded-full border border-slate-200 font-bold text-xs uppercase">Cümə</button>
-                        </div>
-
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="font-black text-slate-700 uppercase text-sm tracking-tighter" id="selectedDayLabel">Həftəlik Trend</h3>
-                            <div class="flex gap-2 items-center">
-                                <span class="w-3 h-3 rounded-full bg-blue-500"></span>
-                                <span id="trendLabel" class="text-[10px] font-bold text-slate-400 italic">Hazırkı: 15 Unit</span>
+                        <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200/60 flex items-center gap-4 hover:bg-white transition-all">
+                            <span class="text-3xl bg-white p-2.5 rounded-xl shadow-sm">🏫</span>
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm">Məktəb Sinifləri və Dəhlizləri</h4>
+                                <p class="text-xs text-stone-500 mt-0.5">Dərs küyünü azaldır, tənəffüsdə isə anidən yaranan aqressiv qışqırıq və təhlükə səslərini seçir.</p>
                             </div>
                         </div>
-                        <div style="height: 250px; width: 100%;">
-                            <canvas id="weeklyStatsChart"></canvas>
+
+                        <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200/60 flex items-center gap-4 hover:bg-white transition-all">
+                            <span class="text-3xl bg-white p-2.5 rounded-xl shadow-sm">📚</span>
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm">Universitet və Mərkəzi Kitabxanalar</h4>
+                                <p class="text-xs text-stone-500 mt-0.5">Oxu zallarında sakitlik mühitini vizual işıqlar ilə avtonom idarə edir.</p>
+                            </div>
                         </div>
-                        <div class="mt-8">
-                            <input type="range" id="weeklySlider" min="0" max="100" value="15" class="w-full h-2 bg-slate-200 rounded-full appearance-none cursor-pointer accent-blue-600">
+
+                        <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200/60 flex items-center gap-4 hover:bg-white transition-all">
+                            <span class="text-3xl bg-white p-2.5 rounded-xl shadow-sm">🏢</span>
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm">İmtahan Mərkəzləri və İnzibati Binalar</h4>
+                                <p class="text-xs text-stone-500 mt-0.5">Test zamanı küy həddini ölçərək analitik məlumat bazasına ötürür.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sağ: Telefon Ekranında Xəritə Mockup -->
+                <div class="lg:col-span-6 flex justify-center">
+                    <div class="w-full max-w-sm bg-slate-950 p-5 rounded-[3rem] shadow-2xl relative text-white border-4 border-slate-800">
+                        <!-- Speaker / Dynamic Island -->
+                        <div class="absolute top-4 left-1/2 -translate-x-1/2 w-28 h-4 bg-black rounded-full z-20"></div>
+
+                        <div class="mt-4 mb-3 flex justify-between items-center text-[10px] text-slate-400 px-3">
+                            <span class="font-bold">09:41</span>
+                            <span>📶 5G 🔋 99%</span>
+                        </div>
+
+                        <!-- Telefon Ekran Kontenti -->
+                        <div class="bg-slate-900 rounded-[2rem] p-4 h-[350px] relative border border-slate-800 flex flex-col justify-between overflow-hidden">
+                            <!-- Xəritə Şəbəkə Şəbəkəsi -->
+                            <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#6366f1_1.5px,transparent_1.5px)] [background-size:14px_14px]"></div>
+
+                            <div class="relative z-10 flex justify-between items-center bg-slate-800/90 backdrop-blur-md p-2.5 rounded-xl border border-slate-700">
+                                <span class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Canlı Şəbəkə
+                                </span>
+                                <span class="text-[9px] bg-indigo-500/20 text-indigo-300 font-extrabold px-2 py-0.5 rounded-md">IoT Online</span>
+                            </div>
+
+                            <!-- Xəritə İnteraktiv Nöqtələri -->
+                            <div class="relative z-10 my-auto h-44 w-full">
+                                <div onclick="updateMapDetail('7 Nömrəli Məktəb', 'Normal (15 Unit)', '🟢')" class="map-pin absolute top-2 left-4 bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-[10px] font-extrabold px-2.5 py-1 rounded-lg flex items-center gap-1">
+                                    <span>🏫 7 № Məktəb</span>
+                                </div>
+
+                                <div onclick="updateMapDetail('Mərkəzi Kitabxana', 'Nəzarətdə (45 Unit)', '🟡')" class="map-pin absolute top-16 right-3 bg-amber-500/20 border border-amber-400 text-amber-300 text-[10px] font-extrabold px-2.5 py-1 rounded-lg flex items-center gap-1">
+                                    <span>📚 Mərkəzi Kitabxana</span>
+                                </div>
+
+                                <div onclick="updateMapDetail('23 Nömrəli Məktəb', 'Normal (12 Unit)', '🟢')" class="map-pin absolute bottom-14 left-8 bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-[10px] font-extrabold px-2.5 py-1 rounded-lg flex items-center gap-1">
+                                    <span>🏫 23 № Məktəb</span>
+                                </div>
+
+                                <div onclick="updateMapDetail('BDU Oxu Zalı', 'Sakit (8 Unit)', '🟢')" class="map-pin absolute bottom-2 right-6 bg-indigo-500/20 border border-indigo-400 text-indigo-300 text-[10px] font-extrabold px-2.5 py-1 rounded-lg flex items-center gap-1">
+                                    <span>📖 BDU Oxu Zalı</span>
+                                </div>
+                            </div>
+
+                            <!-- Seçilmiş Nöqtə Məlumatı -->
+                            <div id="mapDetailCard" class="relative z-10 bg-slate-800/90 backdrop-blur-md p-3 rounded-xl border border-slate-700">
+                                <div class="flex justify-between items-center text-xs">
+                                    <span id="mapLocName" class="font-bold text-white">📍 7 Nömrəli Məktəb</span>
+                                    <span id="mapLocStatus" class="text-emerald-400 font-extrabold text-[10px]">🟢 Normal (15 Unit)</span>
+                                </div>
+                                <p class="text-[9px] text-slate-400 mt-1">Nöqtələrə basaraq canlı obyekt statusunu dəyişin.</p>
+                            </div>
+                        </div>
+
+                        <p class="text-center text-[11px] text-slate-400 mt-3 font-semibold">Mobil İdarəetmə Paneli</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SİMULYATOR BÖLMƏSİ -->
+        <section id="simulyator" class="scroll-mt-28 bento-card p-8 md:p-12">
+            <div class="text-center max-w-2xl mx-auto mb-10 space-y-2">
+                <span class="text-xs font-bold uppercase tracking-widest text-indigo-600 bg-indigo-50 px-3.5 py-1.5 rounded-full border border-indigo-100">İnteraktiv İdarəetmə</span>
+                <h2 class="text-3xl md:text-4xl font-black text-slate-900">AI Səs Təhlili və İdarəetmə Paneli</h2>
+                <p class="text-stone-600 text-sm">Slayder vasitəsilə səs intensivliyini artırın və cihaz reaksiyasını real vaxtda test edin.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+                <!-- Sol: Səs Ölçü Şkalaları və Slayder -->
+                <div class="space-y-6 bg-stone-50/80 p-6 md:p-8 rounded-3xl border border-stone-200/80">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-base font-bold text-slate-900">Canlı Səs Test Paneli</h3>
+                        <button onclick="triggerSOS('Silah Səsi')" class="bg-rose-600 hover:bg-rose-700 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold uppercase transition-all shadow-sm active:scale-95">
+                            🚨 Silah Test
+                        </button>
+                    </div>
+
+                    <!-- İki Dairəvi Şkala -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white p-4 rounded-2xl border border-stone-200/60 flex flex-col items-center relative h-44 justify-center shadow-sm">
+                            <canvas id="unitGauge" class="absolute inset-0"></canvas>
+                            <div class="relative z-10 text-center pt-5">
+                                <span id="unitVal" class="text-4xl font-black text-slate-900">10</span>
+                                <span class="text-[10px] font-bold text-stone-400 block uppercase tracking-wider mt-1">Səs Vahidi (Unit)</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-2xl border border-stone-200/60 flex flex-col items-center relative h-44 justify-center shadow-sm">
+                            <canvas id="dbGauge" class="absolute inset-0"></canvas>
+                            <div class="relative z-10 text-center pt-5">
+                                <span id="dbVal" class="text-4xl font-black text-slate-900">40</span>
+                                <span class="text-[10px] font-bold text-stone-400 block uppercase tracking-wider mt-1">Təzyiq (dB)</span>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="space-y-4" id="weeklyReportContainer">
-                        <div id="dayBox0" class="bg-emerald-50 p-5 rounded-2xl border-l-8 border-emerald-500 shadow-sm transition-all">
-                            <p class="text-[10px] font-black text-emerald-600 mb-1">Pazartesi</p>
-                            <p id="txt0" class="text-slate-800 font-bold text-sm">Stabil: 15 unit</p>
+                    <!-- Control Slider -->
+                    <div class="space-y-2 pt-1">
+                        <div class="flex justify-between text-[11px] font-bold text-stone-500 uppercase">
+                            <span>0 Unit (Sakit)</span>
+                            <span>100 Unit (Təhlükə)</span>
                         </div>
-                        <div id="dayBox1" class="bg-emerald-50 p-5 rounded-2xl border-l-8 border-emerald-500 shadow-sm transition-all">
-                            <p class="text-[10px] font-black text-emerald-600 mb-1">Çərşənbə axşamı</p>
-                            <p id="txt1" class="text-slate-800 font-bold text-sm">Stabil: 12 unit</p>
+                        <input type="range" id="soundSlider" min="0" max="100" value="10" class="w-full h-2.5 bg-stone-200 rounded-full appearance-none cursor-pointer accent-indigo-600">
+                    </div>
+
+                    <!-- Status Indicator Box -->
+                    <div id="statusBox" class="p-4 rounded-2xl text-center bg-emerald-50 text-emerald-900 border border-emerald-200 transition-all">
+                        <h3 id="statusTitle" class="text-base font-black">🟢 Yaşıl Zona (Sakitlik)</h3>
+                        <p id="statusDesc" class="text-xs font-medium text-emerald-700 mt-0.5">"Hər şey əladır, belə davam edin."</p>
+                    </div>
+                </div>
+
+                <!-- Sağ: Rejim İzahatları -->
+                <div class="space-y-4">
+                    <h3 class="text-2xl font-black text-slate-900">Süni İntellekt İş Prinsipi</h3>
+
+                    <div class="p-5 bg-white rounded-2xl border border-stone-200/60 shadow-sm space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                            <span class="font-bold text-slate-900 text-sm">Yaşıl Zona (&lt; 20 Unit)</span>
                         </div>
-                        <div id="dayBox2" class="bg-emerald-50 p-5 rounded-2xl border-l-8 border-emerald-500 shadow-sm transition-all">
-                            <p class="text-[10px] font-black text-emerald-600 mb-1">Çərşənbə</p>
-                            <p id="txt2" class="text-slate-800 font-bold text-sm">Stabil: 18 unit</p>
+                        <p class="text-xs text-stone-600 leading-relaxed pl-5">
+                            Optimal dərs və dinləmə ortamı. Şagirdlərin diqqətini tam cəmləməsi üçün ideal akustik səviyyə.
+                        </p>
+                    </div>
+
+                    <div class="p-5 bg-white rounded-2xl border border-stone-200/60 shadow-sm space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+                            <span class="font-bold text-slate-900 text-sm">Sarı Zona (20 - 60 Unit)</span>
                         </div>
-                        <div id="dayBox3" class="bg-emerald-50 p-5 rounded-2xl border-l-8 border-emerald-500 shadow-sm transition-all">
-                            <p class="text-[10px] font-black text-emerald-600 mb-1">Cümə axşamı</p>
-                            <p id="txt3" class="text-slate-800 font-bold text-sm">Stabil: 15 unit</p>
+                        <p class="text-xs text-stone-600 leading-relaxed pl-5">
+                            Xəbərdarlıq rejimı. Səs-küyün yüksəldiyini göstərir və şagirdləri özünüidarəyə çağırır.
+                        </p>
+                    </div>
+
+                    <div class="p-5 bg-white rounded-2xl border border-stone-200/60 shadow-sm space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-rose-500"></span>
+                            <span class="font-bold text-slate-900 text-sm">Qırmızı Zona (&gt; 60 Unit / SOS 75+)</span>
                         </div>
-                        <div id="dayBox4" class="bg-emerald-50 p-5 rounded-2xl border-l-8 border-emerald-500 shadow-sm transition-all">
-                            <p class="text-[10px] font-black text-emerald-600 mb-1">Cümə</p>
-                            <p id="txt4" class="text-slate-800 font-bold text-sm">Stabil: 11 unit</p>
-                        </div>
+                        <p class="text-xs text-stone-600 leading-relaxed pl-5">
+                            Kritik küy və ya fövqəladə səs. 75+ unit keçildikdə sistem məktəb rəhbərliyinə avtomatik SOS bildirişi göndərir.
+                        </p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- SLAYD: Komanda -->
-        <section class="slide bg-slate-50">
-            <div class="max-w-5xl w-full text-center px-4 py-8">
-                <h2 class="text-3xl md:text-5xl font-black text-slate-800 mb-12 text-center w-full">Komanda</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- Bayramov Ömər (Sosyal hasaplar we linkler meýdançasy) -->
-                    <div class="bg-white p-8 rounded-2xl md:rounded-[2.5rem] shadow-lg border border-slate-100 flex flex-col items-center text-center">
-                        <div class="w-16 h-16 md:w-24 md:h-24 bg-slate-100 rounded-full flex items-center justify-center mb-4 overflow-hidden">
-                            <svg class="w-8 h-8 md:w-12 md:h-12 text-slate-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                        </div>
-                        <h4 class="text-base md:text-xl font-bold text-slate-800 mb-6">Bayramov Ömər</h4>
-                        <div class="flex flex-col gap-3 w-full items-center">
-                            <a href="https://linktr.ee/byramofh" target="_blank" class="flex items-center justify-center gap-3 text-blue-600 hover:text-blue-800 text-base md:text-lg font-black transition-colors group">
-                                <svg class="w-6 h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                                <span>Linktree</span>
-                            </a>
-                            <a href="https://www.linkedin.com/in/omar-bayramov-8522a2284/" target="_blank" class="flex items-center justify-center gap-3 text-sky-700 hover:text-sky-900 text-base md:text-lg font-black transition-colors group">
-                                <svg class="w-6 h-6 md:w-7 md:h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-                                <span>LinkedIn</span>
-                            </a>
-                            <a href="https://www.instagram.com/omarrbayram/" target="_blank" class="flex items-center justify-center gap-3 text-pink-600 hover:text-pink-800 text-base md:text-lg font-black transition-colors group">
-                                <svg class="w-6 h-6 md:w-7 md:h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                                <span>Instagram</span>
-                            </a>
-                        </div>
+        <!-- HƏFTƏLİK STATİSTİKA VƏ ANALİZ SİMULYATORU -->
+        <section id="statistika" class="scroll-mt-28 bento-card p-8 md:p-12">
+            <div class="text-center max-w-2xl mx-auto mb-10 space-y-2">
+                <span class="text-xs font-bold uppercase tracking-widest text-indigo-600 bg-indigo-50 px-3.5 py-1.5 rounded-full border border-indigo-100">Analitik Hesabat</span>
+                <h2 class="text-3xl md:text-4xl font-black text-slate-900">Həftəlik Analiz Simulyatoru</h2>
+                <p class="text-stone-600 text-sm">Həftənin gününü seçib səs dəyərini tənzimləməklə hesabatı canlı müşahidə edin.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Qrafik Paneli -->
+                <div class="lg:col-span-2 bg-stone-50/80 p-6 md:p-8 rounded-3xl border border-stone-200/80 space-y-6">
+                    <div class="flex flex-wrap gap-2 justify-center">
+                        <button onclick="selectDay(0)" id="btn0" class="day-btn active px-4 py-2 rounded-full border border-stone-200 font-bold text-xs uppercase bg-white">Bazar ertəsi</button>
+                        <button onclick="selectDay(1)" id="btn1" class="day-btn px-4 py-2 rounded-full border border-stone-200 font-bold text-xs uppercase bg-white">Çərşənbə axşamı</button>
+                        <button onclick="selectDay(2)" id="btn2" class="day-btn px-4 py-2 rounded-full border border-stone-200 font-bold text-xs uppercase bg-white">Çərşənbə</button>
+                        <button onclick="selectDay(3)" id="btn3" class="day-btn px-4 py-2 rounded-full border border-stone-200 font-bold text-xs uppercase bg-white">Cümə axşamı</button>
+                        <button onclick="selectDay(4)" id="btn4" class="day-btn px-4 py-2 rounded-full border border-stone-200 font-bold text-xs uppercase bg-white">Cümə</button>
                     </div>
 
-                    <!-- Müraciət et düymələri bölümü -->
-                    <div class="md:col-span-2 bg-gradient-to-br from-slate-900 to-slate-800 p-8 rounded-[2.5rem] shadow-xl border border-slate-700/50 flex flex-col justify-between text-left text-white relative overflow-hidden">
-                        <div class="absolute -right-16 -top-16 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl"></div>
-                        <div class="absolute -left-16 -bottom-16 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl"></div>
-                        
-                        <div class="relative z-10">
-                            <span class="text-blue-400 text-xs font-bold uppercase tracking-widest bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">Bizə Qoşul</span>
-                            <h3 class="text-2xl md:text-4xl font-black mt-4 mb-2 tracking-tight">Bizimlə yeni layihələrdə çalışmaq istəyirsiniz?</h3>
-                            <p class="text-slate-300 text-sm md:text-base leading-relaxed mb-6 font-medium">Səs işıqforu innovasiya komandasına müraciət etmək və gələcək inkişaf addımlarımızda birgə çalışmaq üçün formunu doldurun!</p>
-                        </div>
-                        <div class="relative z-10 mt-auto">
-                            <button onclick="openApplyModal()" class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm uppercase px-8 py-4 rounded-2xl shadow-lg shadow-blue-500/10 transition-all hover:-translate-y-1">
-                                📝 Müraciət Et
-                            </button>
-                        </div>
+                    <div class="flex justify-between items-center px-2">
+                        <span id="selectedDayLabel" class="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Bazar ertəsi - Səs Trendi</span>
+                        <span id="trendLabel" class="text-xs font-bold text-indigo-600">Hazırkı: 15 Unit</span>
+                    </div>
+
+                    <div style="height: 220px; width: 100%;">
+                        <canvas id="weeklyStatsChart"></canvas>
+                    </div>
+
+                    <div class="space-y-2 pt-2">
+                        <label class="block text-[11px] font-bold text-stone-500 uppercase">Seçilən Gün Üçün Səs Vahidini Dəyişin:</label>
+                        <input type="range" id="weeklySlider" min="0" max="100" value="15" class="w-full h-2 bg-stone-200 rounded-full appearance-none cursor-pointer accent-indigo-600">
+                    </div>
+                </div>
+
+                <!-- Günlük Hesabat Qutuları -->
+                <div class="space-y-3" id="weeklyReportContainer">
+                    <div id="dayBox0" class="bg-white p-4 rounded-2xl border-l-8 border-emerald-500 shadow-sm border border-stone-100 transition-all">
+                        <p class="text-[10px] font-black text-emerald-600 mb-1 uppercase">Bazar ertəsi</p>
+                        <p id="txt0" class="text-slate-800 font-bold text-sm">8B sinfinin səs səviyyəsi: 15 unit.</p>
+                    </div>
+                    <div id="dayBox1" class="bg-white p-4 rounded-2xl border-l-8 border-emerald-500 shadow-sm border border-stone-100 transition-all">
+                        <p class="text-[10px] font-black text-emerald-600 mb-1 uppercase">Çərşənbə axşamı</p>
+                        <p id="txt1" class="text-slate-800 font-bold text-sm">8B sinfinin səs səviyyəsi: 12 unit.</p>
+                    </div>
+                    <div id="dayBox2" class="bg-white p-4 rounded-2xl border-l-8 border-emerald-500 shadow-sm border border-stone-100 transition-all">
+                        <p class="text-[10px] font-black text-emerald-600 mb-1 uppercase">Çərşənbə</p>
+                        <p id="txt2" class="text-slate-800 font-bold text-sm">8B sinfinin səs səviyyəsi: 18 unit.</p>
+                    </div>
+                    <div id="dayBox3" class="bg-white p-4 rounded-2xl border-l-8 border-emerald-500 shadow-sm border border-stone-100 transition-all">
+                        <p class="text-[10px] font-black text-emerald-600 mb-1 uppercase">Cümə axşamı</p>
+                        <p id="txt3" class="text-slate-800 font-bold text-sm">8B sinfinin səs səviyyəsi: 15 unit.</p>
+                    </div>
+                    <div id="dayBox4" class="bg-white p-4 rounded-2xl border-l-8 border-emerald-500 shadow-sm border border-stone-100 transition-all">
+                        <p class="text-[10px] font-black text-emerald-600 mb-1 uppercase">Cümə</p>
+                        <p id="txt4" class="text-slate-800 font-bold text-sm">8B sinfinin səs səviyyəsi: 11 unit.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- SLAYD: FAQ -->
-        <section class="slide bg-slate-50">
-            <div class="max-w-4xl w-full px-4 py-8">
-                <h2 class="text-3xl md:text-5xl font-black text-slate-800 mb-6 md:mb-10 text-center">Suallar</h2>
-                <div class="space-y-3 md:space-y-4">
-                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-100">
-                        <p class="font-black text-blue-600 text-sm md:text-xl mb-1">Şəxsi məlumatlar?</p>
-                        <p class="text-slate-700 text-[10px] md:text-lg italic leading-relaxed">Xeyr. Sistem yalnız səs dalğalarını analiz edir, heç bir danışığı yadda saxlamır.</p>
+        <!-- STEAM VƏ YOL XƏRİTƏSİ -->
+        <section id="steam" class="scroll-mt-28 space-y-8">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <span class="text-xs font-bold uppercase tracking-widest text-indigo-600 bg-indigo-50 px-3.5 py-1.5 rounded-full border border-indigo-100">Texniki Arxitektura</span>
+                <h2 class="text-3xl md:text-5xl font-black text-slate-900">STEAM & İnkişaf Yol Xəritəsi</h2>
+            </div>
+
+            <!-- STEAM Modulları -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bento-card p-6 border-t-4 border-indigo-500">
+                    <span class="text-3xl block mb-2">🧪</span>
+                    <h4 class="font-bold text-slate-900 text-base mb-1">Science (Elm)</h4>
+                    <p class="text-xs text-stone-500 leading-relaxed">Akustik səs dalğalarının və fiziki dB təzyiqinin təhlili.</p>
+                </div>
+
+                <div class="bento-card p-6 border-t-4 border-sky-500">
+                    <span class="text-3xl block mb-2">💻</span>
+                    <h4 class="font-bold text-slate-900 text-lg mb-1">Technology</h4>
+                    <p class="text-xs text-stone-500 leading-relaxed">ESP32 mikrokontrolleri, TensorFlow Lite və IoT şəbəkəsi.</p>
+                </div>
+
+                <div class="bento-card p-6 border-t-4 border-amber-500">
+                    <span class="text-3xl block mb-2">⚙️</span>
+                    <h4 class="font-bold text-slate-900 text-lg mb-1">Engineering</h4>
+                    <p class="text-xs text-stone-500 leading-relaxed">Arduino Uno platası, PCB lövhə yığımı və dözümlü korpus.</p>
+                </div>
+
+                <div class="bento-card p-6 border-t-4 border-emerald-500">
+                    <span class="text-3xl block mb-2">📜</span>
+                    <h4 class="font-bold text-slate-900 text-lg mb-1">Patent & Hüquq</h4>
+                    <p class="text-xs text-stone-500 leading-relaxed">Əqli Mülkiyyət Agentliyinə rəsmi faydalı model müraciəti.</p>
+                </div>
+            </div>
+
+            <!-- İnkişaf Mərhələləri -->
+            <div class="bento-card p-8 md:p-10 space-y-6">
+                <h3 class="text-xl font-black text-slate-900">Strateji Yol Xəritəsi (Roadmap)</h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-5 bg-stone-50 rounded-2xl border border-stone-200/60 space-y-2">
+                        <span class="text-[10px] font-extrabold text-indigo-600 bg-indigo-100/70 px-2.5 py-1 rounded-full uppercase">Mərhələ 1</span>
+                        <h5 class="font-bold text-slate-900 text-sm">MVP & Daxili Ar-Ge</h5>
+                        <p class="text-xs text-stone-500">Arduino Uno və analoq səs sensorunun kalibrasiyası, daxili laboratoriya sınağı.</p>
                     </div>
-                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-100">
-                        <p class="font-black text-blue-600 text-sm md:text-xl mb-1">İnternet kəsilsə?</p>
-                        <p class="text-slate-700 text-[10px] md:text-lg italic leading-relaxed">Daxili emal oflayn da işləyir, lakin bildirişlər üçün Wi-Fi lazımdır.</p>
+
+                    <div class="p-5 bg-stone-50 rounded-2xl border border-stone-200/60 space-y-2">
+                        <span class="text-[10px] font-extrabold text-indigo-600 bg-indigo-100/70 px-2.5 py-1 rounded-full uppercase">Mərhələ 2</span>
+                        <h5 class="font-bold text-slate-900 text-sm">Patent & Pilot Sinif</h5>
+                        <p class="text-xs text-stone-500">Rəsmi prioritet hüququnun alınması və pilot məktəbdə canlı sınaqlar.</p>
                     </div>
-                    <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-100">
-                        <p class="font-black text-blue-600 text-sm md:text-xl mb-1">Yanlış SOS?</p>
-                        <p class="text-slate-700 text-[10px] md:text-lg italic leading-relaxed">AI modelimiz minlərlə nümunə ilə öyrədilib. Yanılma payı 1%-dən azdır.</p>
+
+                    <div class="p-5 bg-stone-50 rounded-2xl border border-stone-200/60 space-y-2">
+                        <span class="text-[10px] font-extrabold text-indigo-600 bg-indigo-100/70 px-2.5 py-1 rounded-full uppercase">Mərhələ 3</span>
+                        <h5 class="font-bold text-slate-900 text-sm">Kütləvi İstehsal & AI</h5>
+                        <p class="text-xs text-stone-500">PCB lövhə istehsalı, ABS plastik korpus və Edge AI səs tanıma yenilənməsi.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- SLAYD: Əlaqə -->
-        <section class="slide bg-slate-100">
-            <div class="max-w-3xl w-full text-center px-4">
-                <h2 class="text-3xl md:text-5xl font-black text-slate-800 mb-8 md:mb-12">Əlaqə</h2>
-                <div class="bg-white p-6 md:p-10 rounded-2xl md:rounded-[2.5rem] shadow-xl border border-slate-200">
-                    <p class="text-slate-500 font-bold uppercase tracking-widest text-[10px] md:text-sm mb-4">Suallarınız üçün</p>
-                    <div class="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 text-base md:text-3xl font-black text-blue-600">
-                        <span>📧</span>
-                        <a href="mailto:bayramovomar81@gmail.com" class="hover:underline break-all">bayramovomar81@gmail.com</a>
-                    </div>
+        <!-- TEZ-TEZ VERİLƏN SUALLAR (FAQ) -->
+        <section class="bento-card p-8 md:p-12 space-y-6">
+            <div class="text-center max-w-xl mx-auto space-y-1">
+                <span class="text-xs font-bold uppercase tracking-widest text-indigo-600 bg-indigo-50 px-3.5 py-1.5 rounded-full border border-indigo-100">Suallarınız Var?</span>
+                <h2 class="text-3xl font-black text-slate-900">Tez-tez Verilən Suallar (FAQ)</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-5 bg-stone-50/80 rounded-2xl border border-stone-200/60 space-y-1.5">
+                    <h4 class="font-bold text-slate-900 text-sm">🔒 Şəxsi məlumatlar və danışıqlar qeydə alınır?</h4>
+                    <p class="text-xs text-stone-600 leading-relaxed">Xeyr. Cihaz heç bir səsi yadda saxlamır və ya yazmır. Yalnız səs dalğalarının intensivliyini (Unit/dB) və təhlükə tezliyini real vaxtda analiz edir.</p>
+                </div>
+
+                <div class="p-5 bg-stone-50/80 rounded-2xl border border-stone-200/60 space-y-1.5">
+                    <h4 class="font-bold text-slate-900 text-sm">🌐 İnternet kəsilərsə sistem necə işləyir?</h4>
+                    <p class="text-xs text-stone-600 leading-relaxed">Səs işıqforunun lokal işıqfor göstəriciləri (Yaşıl, Sarı, Qırmızı) və Buzzer səs siqnalı oflayn rejimdə tam işlək qalır.</p>
+                </div>
+
+                <div class="p-5 bg-stone-50/80 rounded-2xl border border-stone-200/60 space-y-1.5">
+                    <h4 class="font-bold text-slate-900 text-sm">🎯 Yanlış SOS həyəcanı ehtimalı nə qədərdir?</h4>
+                    <p class="text-xs text-stone-600 leading-relaxed">Sistemdə gecikmə (delay) filtri və AI neyron modeli mövcuddur. Anlıq qələm düşməsi və ya təsadüfi qısa səslərdə xəbərdarlıq verilmir.</p>
+                </div>
+
+                <div class="p-5 bg-stone-50/80 rounded-2xl border border-stone-200/60 space-y-1.5">
+                    <h4 class="font-bold text-slate-900 text-sm">📲 Müəllim və rəhbərlik bildirişləri necə alır?</h4>
+                    <p class="text-xs text-stone-600 leading-relaxed">Məktəbin lokal Wi-Fi şəbəkəsi vasitəsilə növbətçi müəllim və zavucların mobil tətbiqinə və ya SMS şəbəkəsinə dərhal xəbərdarlıq gedir.</p>
                 </div>
             </div>
         </section>
 
-        <!-- SLAYD: STEAM -->
-        <section class="slide bg-slate-900 text-white">
-            <div class="max-w-5xl w-full px-4 py-8">
-                <h2 class="text-2xl md:text-4xl font-black mb-8 md:mb-16 text-center">STEAM və AI</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
-                    <div class="bg-white/5 border border-white/10 p-6 md:p-8 rounded-2xl text-center">
-                        <div class="text-3xl md:text-5xl mb-4">🧠</div>
-                        <h4 class="font-black text-lg md:text-xl mb-1 text-blue-400">ESP32</h4>
-                        <p class="text-[10px] md:text-sm text-slate-400">Wi-Fi dəstəkli AI emalı üçün güclü beyin.</p>
+        <!-- KOMANDA BÖLMƏSİ -->
+        <section id="komanda" class="scroll-mt-28 bento-card p-8 md:p-12">
+            <h2 class="text-3xl font-black text-slate-900 mb-8 text-center">Komanda</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+                <!-- Bayramov Ömər -->
+                <div class="bg-stone-50 p-8 rounded-3xl border border-stone-200/70 flex flex-col items-center text-center justify-between">
+                    <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm border border-stone-200">
+                        <svg class="w-10 h-10 text-stone-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                     </div>
-                    <div class="bg-white/5 border border-white/10 p-6 md:p-8 rounded-2xl text-center">
-                        <div class="text-3xl md:text-5xl mb-4">📡</div>
-                        <h4 class="font-black text-lg md:text-xl mb-1 text-emerald-400">Cloud AI</h4>
-                        <p class="text-[10px] md:text-sm text-slate-400">Səsləri buludda analiz edən neyron şəbəkələr.</p>
+                    <h4 class="text-xl font-extrabold text-slate-900 mb-4">Bayramov Ömər</h4>
+                    <div class="flex flex-col gap-2.5 w-full items-center text-xs font-bold">
+                        <a href="https://linktr.ee/byramofh" target="_blank" class="w-full bg-white py-2.5 px-4 rounded-xl border border-stone-200 text-indigo-600 hover:border-indigo-300 transition-all shadow-sm">
+                            🔗 Linktree
+                        </a>
+                        <a href="https://www.linkedin.com/in/omar-bayramov-8522a2284/" target="_blank" class="w-full bg-white py-2.5 px-4 rounded-xl border border-stone-200 text-sky-700 hover:border-sky-300 transition-all shadow-sm">
+                            💼 LinkedIn
+                        </a>
+                        <a href="https://www.instagram.com/omarrbayram/" target="_blank" class="w-full bg-white py-2.5 px-4 rounded-xl border border-stone-200 text-pink-600 hover:border-pink-300 transition-all shadow-sm">
+                            📸 Instagram
+                        </a>
                     </div>
-                    <div class="bg-white/5 border border-white/10 p-6 md:p-8 rounded-2xl text-center">
-                        <div class="text-3xl md:text-5xl mb-4">📱</div>
-                        <h4 class="font-black text-lg md:text-xl mb-1 text-pink-400">Mobil</h4>
-                        <p class="text-[10px] md:text-sm text-slate-400">Rəhbərlik üçün ani SOS tətbiqi.</p>
+                </div>
+
+                <!-- Bizə Qoşul / Müraciət Et Kartı -->
+                <div class="bg-slate-900 p-8 rounded-3xl shadow-xl text-white flex flex-col justify-between relative overflow-hidden">
+                    <div class="absolute -right-10 -top-10 w-32 h-36 bg-indigo-500/10 rounded-full blur-2xl"></div>
+                    <div>
+                        <span class="text-indigo-400 text-[10px] font-bold uppercase tracking-widest bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20">Bizə Qoşul</span>
+                        <h3 class="text-2xl font-black mt-4 mb-2">Komandaya Qoşulun</h3>
+                        <p class="text-slate-300 text-xs leading-relaxed font-medium">Səs işıqforu innovasiya komandasına müraciət etmək və gələcək layihələrimizdə birgə çalışmaq üçün formunu doldurun!</p>
                     </div>
+                    <button onclick="openApplyModal()" class="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs uppercase py-3.5 px-6 rounded-xl transition-all shadow-lg shadow-indigo-500/20 active:scale-98">
+                        📝 Müraciət Et
+                    </button>
                 </div>
             </div>
         </section>
 
-        <!-- SLAYD: Yekun -->
-        <section class="slide bg-white text-slate-900">
-            <div class="max-w-4xl text-center px-4">
-                <div class="mb-8 md:mb-12 animate__animated animate__pulse animate__infinite">
-                    <span class="text-6xl md:text-8xl">🛡️</span>
-                </div>
-                <h2 class="text-3xl md:text-5xl font-black mb-6 md:mb-8">Məktəbləri AI ilə qoruyaq!</h2>
-                <p class="text-base md:text-xl text-slate-500 leading-relaxed mb-8 md:mb-12">
-                    "Bu sistem məktəbin hər bir şagirdinin təhlükəsizliyini saniyələr ərzində təmin edən bir ekosistemdir."
-                </p>
-                <div class="bg-blue-600 text-white p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] shadow-2xl inline-block px-8 md:px-12">
-                    <p class="text-lg md:text-2xl font-black">Təhlükəsiz gələcək!</p>
-                </div>
+        <!-- ƏLAQƏ BÖLMƏSİ -->
+        <section id="elaqe" class="scroll-mt-28 bento-card p-10 md:p-14 text-center bg-slate-900 text-white relative overflow-hidden">
+            <div class="relative z-10 max-w-xl mx-auto space-y-3">
+                <span class="text-indigo-400 text-xs font-bold uppercase tracking-widest bg-indigo-500/10 px-3.5 py-1.5 rounded-full border border-indigo-500/20">Əməkdaşlıq</span>
+                <h2 class="text-3xl md:text-4xl font-black">Bizimlə Əlaqə</h2>
+                <p class="text-slate-400 text-sm">Təklifləriniz, suallarınız və ya məktəb inteqrasiyaları üçün doğrudan yazın:</p>
+                <a href="mailto:bayramovomar81@gmail.com" class="inline-block text-xl md:text-3xl font-black text-indigo-400 hover:text-indigo-300 transition-colors underline underline-offset-8 break-all pt-2">
+                    bayramovomar81@gmail.com
+                </a>
             </div>
         </section>
 
-    </div>
+    </main>
 
-    <!-- MÜRACİƏT EDİN MODAL FORMU (POPUP) -->
-    <div id="applyModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[2000] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-[2.5rem] p-6 md:p-8 max-w-md w-full shadow-2xl border border-slate-100 relative animate__animated animate__zoomIn">
-            <button onclick="closeApplyModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors text-xl font-bold">✕</button>
-            <h3 class="text-2xl font-black text-slate-800 mb-6 text-center">Müraciət Formu</h3>
+    <!-- FOOTER -->
+    <footer class="border-t border-stone-200/80 py-8 text-center text-xs text-stone-500 font-medium">
+        <p>© 2026 Səs İşıqforu 1.0 - Ağıllı Məktəb Təhlükəsizliyi Ekosistemi. Bütün hüquqlar qorunur.</p>
+    </footer>
+
+    <!-- MÜRACİƏT MODALI (POPUP FORMA) -->
+    <div id="applyModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[2000] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-stone-100 relative animate__animated animate__zoomIn">
+            <button onclick="closeApplyModal()" class="absolute top-4 right-4 text-stone-400 hover:text-stone-600 text-xl font-bold p-1">✕</button>
+            <h3 class="text-2xl font-black text-slate-900 mb-6 text-center">Müraciət Formu</h3>
             <form id="applyForm" onsubmit="handleApplySubmit(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Ad Soyad</label>
-                    <input type="text" required id="applyName" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ömər Bayramov">
+                    <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Ad Soyad</label>
+                    <input type="text" required id="applyName" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Ömər Bayramov">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Gmail</label>
-                    <input type="email" required id="applyEmail" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="numune@gmail.com">
+                    <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Gmail</label>
+                    <input type="email" required id="applyEmail" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="numune@gmail.com">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Telefon Nömrəsi</label>
-                    <input type="tel" required id="applyPhone" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="+994 (50) 000-00-00">
+                    <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Telefon Nömrəsi</label>
+                    <input type="tel" required id="applyPhone" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="+994 (50) 000-00-00">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Doğum Tarixi</label>
-                    <input type="date" required id="applyDob" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-xs font-bold text-stone-500 uppercase mb-1">Doğum Tarixi</label>
+                    <input type="date" required id="applyDob" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold p-3 rounded-xl transition-all shadow-lg hover:shadow-blue-500/20 mt-2">Göndər</button>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold p-3.5 rounded-xl transition-all shadow-md mt-2">
+                    Göndər
+                </button>
             </form>
         </div>
     </div>
 
+    <!-- SOS / XƏBƏRDARLIQ MODALI -->
+    <div id="notifOverlay" class="fixed inset-0 bg-black/70 backdrop-blur-md z-[2000] hidden items-center justify-center p-4">
+        <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-2xl border-4 border-rose-600 text-center max-w-sm relative animate__animated animate__headShake">
+            <button onclick="closeNotif()" class="absolute top-3 right-4 text-xl font-bold text-slate-400 hover:text-white">✕</button>
+            <div class="text-6xl mb-3">🚨</div>
+            <h3 class="text-2xl font-black mb-2 uppercase italic text-rose-500">Təhlükəli Səs Həddi!</h3>
+            <p class="text-slate-300 text-sm mb-4">Süni İntellekt tərəfindən məktəb rəhbərliyinə dərhal SOS bildirişi və SMS göndərildi.</p>
+            <button onclick="closeNotif()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-6 py-2 rounded-xl text-xs uppercase">Anladım</button>
+        </div>
+    </div>
+
     <script>
-        const container = document.getElementById('mainContainer');
-        const dotsContainer = document.getElementById('navDots');
-        const slides = document.querySelectorAll('.slide');
-        let currentSlide = 0;
-        let isMoving = false;
-
-        // Statistika məlumatları
-        let weeklyData = [15, 12, 18, 15, 11];
-        const dayNames = ['Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə'];
-
-        // Nöqtələr və naviqasiya qurulması
-        function createDots() {
-            dotsContainer.innerHTML = '';
-            slides.forEach((_, i) => {
-                const dot = document.createElement('div');
-                dot.className = `dot ${i === currentSlide ? 'active' : ''}`;
-                if ([1, 2, 3, 4, 5, 6, 7, 8].includes(i)) dot.classList.add('dark-dot');
-                dot.addEventListener('click', () => goToSlide(i));
-                dotsContainer.appendChild(dot);
-            });
-        }
-
-        function updateDots() {
-            const dots = document.querySelectorAll('.dot');
-            dots.forEach((dot, i) => {
-                dot.classList.toggle('active', i === currentSlide);
-            });
-        }
-
-        function goToSlide(index) {
-            if (isMoving) return;
-            isMoving = true;
-            currentSlide = index;
-            container.style.transform = `translateY(-${currentSlide * 100}vh)`;
-            updateDots();
-            setTimeout(() => isMoving = false, 800);
-        }
-
-        createDots();
-
-        // Sürüşdürmə (swipe) və siçan çarxı (scroll) hadisələri
-        let startY = 0;
-        window.addEventListener('touchstart', (e) => { startY = e.touches[0].pageY; }, {passive: true});
-        window.addEventListener('touchend', (e) => {
-            let endY = e.changedTouches[0].pageY;
-            if (startY - endY > 50 && currentSlide < slides.length - 1) goToSlide(currentSlide + 1);
-            else if (endY - startY > 50 && currentSlide > 0) goToSlide(currentSlide - 1);
-        }, {passive: true});
-
-        window.addEventListener('wheel', (e) => {
-            if (e.deltaY > 0) {
-                if (currentSlide < slides.length - 1) goToSlide(currentSlide + 1);
-            } else {
-                if (currentSlide > 0) goToSlide(currentSlide - 1);
-            }
-        });
-
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowDown') goToSlide(Math.min(currentSlide + 1, slides.length - 1));
-            if (e.key === 'ArrowUp') goToSlide(Math.max(currentSlide - 1, 0));
-        });
-
-        // Simulyator və səs göstəriciləri
+        // Simulyator Qrafikləri
         const slider = document.getElementById('soundSlider');
         const unitDisplay = document.getElementById('unitVal');
         const dbDisplay = document.getElementById('dbVal');
@@ -608,20 +644,11 @@
         const statusTitle = document.getElementById('statusTitle');
         const statusDesc = document.getElementById('statusDesc');
         const notifOverlay = document.getElementById('notifOverlay');
-        const sosAlertBox = document.getElementById('sosAlertBox');
-        const alertEmoji = document.getElementById('alertEmoji');
-        const alertTitle = document.getElementById('alertTitle');
-        const alertBody = document.getElementById('alertBody');
-        const sosFooter = document.getElementById('sosFooter');
-        const micIcon = document.getElementById('micIcon');
-        
-        let userClosedNotif = false;
-        let sosModeActive = false;
-        let isLiveMic = false;
-        let audioContext, analyser, microphone, javascriptNode;
 
         const createGauge = (id, color) => {
-            return new Chart(document.getElementById(id).getContext('2d'), {
+            const ctx = document.getElementById(id);
+            if (!ctx) return null;
+            return new Chart(ctx.getContext('2d'), {
                 type: 'doughnut',
                 data: {
                     datasets: [{
@@ -630,205 +657,139 @@
                         borderWidth: 0,
                         circumference: 180,
                         rotation: 270,
-                        cutout: '85%',
-                        borderRadius: 20
+                        cutout: '80%',
+                        borderRadius: 10
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false }, tooltip: { enabled: false } },
-                    animation: { duration: 200, easing: 'linear' }
+                    animation: { duration: 150 }
                 }
             });
         };
 
-        const unitChart = createGauge('unitGauge', '#22c55e');
-        const dbChart = createGauge('dbGauge', '#3b82f6');
-
-        let audioCtx, oscillator;
-
-        async function toggleLiveMic() {
-            if (isLiveMic) {
-                stopLiveMic();
-                return;
-            }
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-                isLiveMic = true;
-                micIcon.classList.add('mic-active');
-                micIcon.title = "Canlı səsi dayandır";
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                analyser = audioContext.createAnalyser();
-                microphone = audioContext.createMediaStreamSource(stream);
-                javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
-                analyser.smoothingTimeConstant = 0.8;
-                analyser.fftSize = 1024;
-                microphone.connect(analyser);
-                analyser.connect(javascriptNode);
-                javascriptNode.connect(audioContext.destination);
-                javascriptNode.onaudioprocess = function() {
-                    const array = new Uint8Array(analyser.frequencyBinCount);
-                    analyser.getByteFrequencyData(array);
-                    let values = 0;
-                    for (let i = 0; i < array.length; i++) values += (array[i]);
-                    const average = values / array.length;
-                    let liveVal = Math.round(average * 1.5); 
-                    if (liveVal > 100) liveVal = 100;
-                    slider.value = liveVal;
-                    updateSimulation(liveVal);
-                };
-            } catch (err) { console.error("Mikrofon icazəsi yoxdur:", err); }
-        }
-
-        function stopLiveMic() {
-            isLiveMic = false;
-            micIcon.classList.remove('mic-active', 'mic-vibrate');
-            micIcon.classList.replace('text-green-500', 'text-slate-400');
-            micIcon.classList.replace('text-yellow-500', 'text-slate-400');
-            micIcon.classList.replace('text-red-600', 'text-slate-400');
-            if (javascriptNode) { javascriptNode.disconnect(); javascriptNode.onaudioprocess = null; }
-            if (microphone) microphone.disconnect();
-            if (analyser) analyser.disconnect();
-            if (audioContext) audioContext.close();
-            updateSimulation(10);
-        }
-
-        function triggerSOS(type) {
-            sosModeActive = true;
-            userClosedNotif = false;
-            notifOverlay.style.display = 'flex';
-            sosAlertBox.classList.add('sos-active');
-            alertEmoji.innerText = '🚨';
-            alertTitle.innerText = `TƏHLÜKƏ: ${type.toUpperCase()}`;
-            alertBody.innerText = "SOS siqnalı göndərildi.";
-            sosFooter.innerText = "Sistem dərhal kömək çağırdı.";
-            micIcon.classList.add('mic-vibrate');
-            micIcon.classList.replace('text-slate-400', 'text-red-600');
-            playSOSBuzzer();
-        }
-
-        function closeNotif() {
-            notifOverlay.style.display = 'none';
-            userClosedNotif = true;
-            sosModeActive = false;
-            sosAlertBox.classList.remove('sos-active');
-            micIcon.classList.remove('mic-vibrate');
-            stopBuzzer();
-        }
+        let unitChart = null;
+        let dbChart = null;
 
         function updateSimulation(val) {
-            if (sosModeActive) return;
             const dbVal = Math.round(30 + (val * 0.9));
-            unitDisplay.innerText = val;
-            dbDisplay.innerText = dbVal;
-            statusBox.className = "p-4 rounded-xl text-center border-2 shadow-sm transition-all";
-            let color = '#22c55e';
-            micIcon.classList.remove('mic-vibrate');
+            if (unitDisplay) unitDisplay.innerText = val;
+            if (dbDisplay) dbDisplay.innerText = dbVal;
+            
+            let color = '#10b981';
+            
             if (val < 20) {
-                statusBox.classList.add('bg-green-100', 'text-green-800', 'border-green-200');
-                statusTitle.innerText = "🟢 Yaşıl"; color = '#22c55e';
-                const baseClass = isLiveMic ? 'text-green-500' : 'text-slate-400';
-                micIcon.className = `text-2xl md:text-3xl ${baseClass} transition-all duration-300 ${isLiveMic ? 'mic-active' : ''}`;
+                if (statusBox) statusBox.className = "p-4 rounded-2xl text-center bg-emerald-50 text-emerald-900 border border-emerald-200 transition-all";
+                if (statusTitle) statusTitle.innerText = "🟢 Yaşıl Zona (Sakitlik)";
+                if (statusDesc) statusDesc.innerText = '"Hər şey əladır, belə davam edin."';
+                color = '#10b981';
             } else if (val <= 60) {
-                statusBox.classList.add('bg-yellow-100', 'text-yellow-800', 'border-yellow-200');
-                statusTitle.innerText = "🟡 Sarı"; color = '#eab308';
-                micIcon.className = `text-2xl md:text-3xl text-yellow-500 transition-all duration-300 ${isLiveMic ? 'mic-active' : ''}`;
+                if (statusBox) statusBox.className = "p-4 rounded-2xl text-center bg-amber-50 text-amber-900 border border-amber-200 transition-all";
+                if (statusTitle) statusTitle.innerText = "🟡 Sarı Zona (Xəbərdarlıq)";
+                if (statusDesc) statusDesc.innerText = '"Diqqət! Səs-küy artır, sakitliyə riayət edin."';
+                color = '#f59e0b';
             } else {
-                statusBox.classList.add('bg-red-100', 'text-red-800', 'border-red-200', 'blinking-bg');
-                statusTitle.innerText = "🔴 Qırmızı"; color = '#ef4444';
-                playBuzzer();
-                micIcon.className = `text-2xl md:text-3xl text-red-600 transition-all duration-300 mic-vibrate ${isLiveMic ? 'mic-active' : ''}`;
-                if (val >= 70 && !userClosedNotif) notifOverlay.style.display = 'flex';
+                if (statusBox) statusBox.className = "p-4 rounded-2xl text-center bg-rose-50 text-rose-900 border border-rose-200 blinking-bg transition-all";
+                if (statusTitle) statusTitle.innerText = "🔴 Qırmızı Zona (Kritik)";
+                if (statusDesc) statusDesc.innerText = '"KRİTİK HƏDD! Məktəb rəhbərliyinə xəbərdarlıq edilir."';
+                color = '#f43f5e';
+                if (val >= 75 && notifOverlay) notifOverlay.style.display = 'flex';
             }
-            unitChart.data.datasets[0].data = [val, 100 - val];
-            unitChart.data.datasets[0].backgroundColor[0] = color;
-            unitChart.update('none');
-            dbChart.data.datasets[0].data = [val, 100 - val];
-            dbChart.data.datasets[0].backgroundColor[0] = color;
-            dbChart.update('none');
+
+            if (unitChart) {
+                unitChart.data.datasets[0].data = [val, 100 - val];
+                unitChart.data.datasets[0].backgroundColor[0] = color;
+                unitChart.update('none');
+            }
+            if (dbChart) {
+                dbChart.data.datasets[0].data = [val, 100 - val];
+                dbChart.data.datasets[0].backgroundColor[0] = color;
+                dbChart.update('none');
+            }
         }
 
-        function playBuzzer() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (oscillator) return;
-            oscillator = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            oscillator.type = 'square';
-            oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
-            oscillator.connect(gain); gain.connect(audioCtx.destination);
-            oscillator.start();
+        if (slider) {
+            slider.addEventListener('input', (e) => updateSimulation(parseInt(e.target.value)));
         }
 
-        function playSOSBuzzer() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            stopBuzzer();
-            oscillator = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            oscillator.type = 'sawtooth';
-            oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
-            oscillator.connect(gain); gain.connect(audioCtx.destination);
-            oscillator.start();
+        function closeNotif() { 
+            if (notifOverlay) notifOverlay.style.display = 'none'; 
         }
 
-        function stopBuzzer() { if (oscillator) { oscillator.stop(); oscillator = null; } }
-        
-        slider.addEventListener('input', (e) => {
-            if (isLiveMic) stopLiveMic();
-            updateSimulation(parseInt(e.target.value));
-        });
+        function triggerSOS(type) { 
+            if (notifOverlay) notifOverlay.style.display = 'flex'; 
+        }
 
-        // --- HƏFTƏLİK ANALİZ SİSTEMİ ---
-        const weeklyCtx = document.getElementById('weeklyStatsChart').getContext('2d');
-        const weeklyChart = new Chart(weeklyCtx, {
-            type: 'line',
-            data: {
-                labels: ['B.e', 'Ç.a', 'Çə', 'C.a', 'Cü'],
-                datasets: [{
-                    label: 'Səs',
-                    data: weeklyData,
-                    borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#3b82f6',
-                    pointBorderWidth: 4,
-                    pointRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: { 
-                        beginAtZero: true, 
-                        max: 100, 
-                        grid: { color: '#f1f5f9' },
-                        ticks: { font: { weight: 'bold' } }
-                    },
-                    x: { grid: { display: false }, ticks: { font: { weight: 'bold' } } }
+        // Xəritə düymələrinə tıklandıqda görünüşü yeniləmək
+        window.updateMapDetail = function(name, status, icon) {
+            const nameEl = document.getElementById('mapLocName');
+            const statusEl = document.getElementById('mapLocStatus');
+            if (nameEl) nameEl.innerText = `📍 ${name}`;
+            if (statusEl) {
+                statusEl.innerText = `${icon} ${status}`;
+                if (status.includes('Normal') || status.includes('Sakit')) {
+                    statusEl.className = "text-emerald-400 font-extrabold text-[10px]";
+                } else {
+                    statusEl.className = "text-amber-400 font-extrabold text-[10px]";
+                }
+            }
+        };
+
+        // Həftəlik Statistika Logikası
+        let currentDayIndex = 0;
+        let weeklyData = [15, 12, 18, 15, 11];
+        const dayNames = ['Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə'];
+        let weeklyChart = null;
+
+        function initWeeklyChart() {
+            const weeklyCtx = document.getElementById('weeklyStatsChart');
+            if (!weeklyCtx) return;
+            
+            weeklyChart = new Chart(weeklyCtx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: ['B.e', 'Ç.a', 'Çə', 'C.a', 'Cü'],
+                    datasets: [{
+                        label: 'Səs Vahidi',
+                        data: weeklyData,
+                        borderColor: '#4f46e5',
+                        backgroundColor: 'rgba(79, 70, 229, 0.08)',
+                        fill: true,
+                        tension: 0.35,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#4f46e5',
+                        pointBorderWidth: 3,
+                        pointRadius: 6
+                    }]
                 },
-                plugins: { legend: { display: false } }
-            }
-        });
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 100, grid: { color: '#f1f5f9' } },
+                        x: { grid: { display: false } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
 
-        // selectDay funksiyası burada qlobal olaraq təyin olunur
         window.selectDay = function(index) {
             document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
             const activeBtn = document.getElementById('btn' + index);
-            if (activeBtn) {
-                activeBtn.classList.add('active');
-            }
+            if (activeBtn) activeBtn.classList.add('active');
             
             currentDayIndex = index;
-            document.getElementById('selectedDayLabel').innerText = dayNames[index] + " - Trend";
+            const dayLabelEl = document.getElementById('selectedDayLabel');
+            if (dayLabelEl) dayLabelEl.innerText = dayNames[index] + " - Səs Trendi";
             
             const val = weeklyData[index];
-            document.getElementById('weeklySlider').value = val;
-            document.getElementById('trendLabel').innerText = `Hazırkı: ${val} Unit`;
+            const weeklySliderEl = document.getElementById('weeklySlider');
+            const trendLabelEl = document.getElementById('trendLabel');
+            if (weeklySliderEl) weeklySliderEl.value = val;
+            if (trendLabelEl) trendLabelEl.innerText = `Hazırkı: ${val} Unit`;
             
             updateDayUI(index, val);
         };
@@ -839,69 +800,71 @@
             if (!box || !txt) return;
             
             if (val > 60) {
-                box.className = "bg-red-50 p-5 rounded-2xl border-l-8 border-red-500 shadow-md scale-105 transition-all";
-                txt.innerText = `XƏBƏRDARLIQ: ${val} unit!`;
+                box.className = "bg-rose-50 p-4 rounded-2xl border-l-8 border-rose-500 shadow-sm border border-stone-100 transition-all";
+                txt.innerText = `8B sinfi küy limiti aşıldı: ${val} unit!`;
             } else if (val > 25) {
-                box.className = "bg-yellow-50 p-5 rounded-2xl border-l-8 border-yellow-500 shadow-sm transition-all";
-                txt.innerText = `Artım var: ${val} unit`;
+                box.className = "bg-amber-50 p-4 rounded-2xl border-l-8 border-amber-500 shadow-sm border border-stone-100 transition-all";
+                txt.innerText = `8B sinfi səs artımı var: ${val} unit.`;
             } else {
-                box.className = "bg-emerald-50 p-5 rounded-2xl border-l-8 border-emerald-500 shadow-sm transition-all";
-                txt.innerText = `Stabil: ${val} unit`;
+                box.className = "bg-emerald-50 p-4 rounded-2xl border-l-8 border-emerald-500 shadow-sm border border-stone-100 transition-all";
+                txt.innerText = `8B sinfi səs səviyyəsi: ${val} unit.`;
             }
         }
 
-        document.getElementById('weeklySlider').addEventListener('input', (e) => {
-            const val = parseInt(e.target.value);
-            weeklyData[currentDayIndex] = val;
-            weeklyChart.data.datasets[0].data = [...weeklyData];
-            weeklyChart.update('none');
-            document.getElementById('trendLabel').innerText = `Hazırkı: ${val} Unit`;
-            updateDayUI(currentDayIndex, val);
-        });
+        const weeklySlider = document.getElementById('weeklySlider');
+        if (weeklySlider) {
+            weeklySlider.addEventListener('input', (e) => {
+                const val = parseInt(e.target.value);
+                weeklyData[currentDayIndex] = val;
+                if (weeklyChart) {
+                    weeklyChart.data.datasets[0].data = [...weeklyData];
+                    weeklyChart.update('none');
+                }
+                const trendLabelEl = document.getElementById('trendLabel');
+                if (trendLabelEl) trendLabelEl.innerText = `Hazırkı: ${val} Unit`;
+                updateDayUI(currentDayIndex, val);
+            });
+        }
 
-        // --- Müraciət modal funksionalları ---
+        // Müraciət Modal Funksiyaları
         window.openApplyModal = function() {
             const modal = document.getElementById('applyModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
         }
 
         window.closeApplyModal = function() {
             const modal = document.getElementById('applyModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
         }
 
         window.handleApplySubmit = function(event) {
             event.preventDefault();
             const name = document.getElementById('applyName').value;
-            const form = document.getElementById('applyForm');
+            const email = document.getElementById('applyEmail').value;
+            const phone = document.getElementById('applyPhone').value;
+            const dob = document.getElementById('applyDob').value;
             
-            const successOverlay = document.createElement('div');
-            successOverlay.className = 'text-center py-6 animate__animated animate__fadeIn';
-            successOverlay.innerHTML = `
-                <span class="text-6xl block mb-4">🎉</span>
-                <h4 class="text-xl font-bold text-slate-800 mb-2">Müraciətiniz Qəbul Olundu!</h4>
-                <p class="text-slate-500 text-sm mb-6">Təşəkkür edirik, <strong>${name}</strong>. Məlumatlarınız uğurla qeydə alındı. Tezliklə sizinlə əlaqə saxlayacağıq.</p>
-                <button onclick="resetApplyForm()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-all shadow-md">Bağla</button>
-            `;
-            form.classList.add('hidden');
-            form.parentNode.appendChild(successOverlay);
-        }
-
-        window.resetApplyForm = function() {
+            const target = "bayramovomar81@gmail.com";
+            const subject = encodeURIComponent("Yeni Komanda Müraciəti: " + name);
+            const body = encodeURIComponent("Ad Soyad: " + name + "\nGmail: " + email + "\nTelefon: " + phone + "\nDoğum tarixi: " + dob);
+            
+            window.location.href = `mailto:${target}?subject=${subject}&body=${body}`;
             closeApplyModal();
-            setTimeout(() => {
-                const form = document.getElementById('applyForm');
-                const successDiv = form.parentNode.querySelector('.text-center');
-                if (successDiv) successDiv.remove();
-                form.classList.remove('hidden');
-                form.reset();
-            }, 300);
         }
 
+        // Başlanğıc Yüklənmə
         window.onload = function() {
-            selectDay(0);
+            unitChart = createGauge('unitGauge', '#10b981');
+            dbChart = createGauge('dbGauge', '#6366f1');
+            
+            initWeeklyChart();
+            window.selectDay(0);
             updateSimulation(10);
         }
     </script>
